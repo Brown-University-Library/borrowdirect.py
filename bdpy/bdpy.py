@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import imp
 from types import ModuleType, NoneType
 
 
