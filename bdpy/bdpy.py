@@ -11,10 +11,17 @@ class BorrowDirect( object ):
         """
         - Allows a settings module to be passed in,
             or a settings path to be passed in,
-            or a dictionary to be passed in.
-        - Sets other attributes.
-        - Attributes in caps are passed in; others are calculated.
-        """
+            or a dictionary to be passed in. """
+        ## general
+        self.BD_API_URL = None
+        self.UNIVERSITY_CODE = None
+        self.LOG_PATH = None
+        normalized_settings = self.normalize_settings( settings )
+        self.update_properties( normalized_settings )
+
+    def normalize_settings( self, settings ):
+        """ Returns a settings module regardless of module or dict or settings-path.
+            Called by __init__() """
         types = [ NoneType, dict, ModuleType, unicode ]
         assert type(settings) in types, Exception( u'Passing in settings is optional, but if used, must be either a dict, a unicode path to a settings module, or a module named settings; current type is: %s' % repr(type(settings)) )
         if isinstance(settings, dict):
@@ -22,14 +29,17 @@ class BorrowDirect( object ):
           for k, v in settings.items():
             setattr( s, k, v )
           settings = s
-        elif isinstance(settings, ModuleType):
-          pass
         elif isinstance(settings, unicode):  # path
           settings = imp.load_source( u'*', settings )
-        ## general
+        return settings
+
+    def update_properties( self, settings ):
+        """ Sets main properties.
+            Called by __init__() """
         self.BD_API_URL = None if ( u'BD_API_URL' not in dir(settings) ) else settings.BD_API_URL
         self.UNIVERSITY_CODE = None if ( u'UNIVERSITY_CODE' not in dir(settings) ) else settings.UNIVERSITY_CODE
         self.LOG_PATH = None if ( u'LOG_PATH' not in dir(settings) ) else settings.LOG_PATH
+        return
 
     def say_hi( self ):
         print u'BD_API_URL, %s' % self.BD_API_URL
