@@ -13,11 +13,12 @@ class BorrowDirect( object ):
             or a settings path to be passed in,
             or a dictionary to be passed in. """
         ## general
-        self.BD_API_URL = None
+        self.API_AUTH_URL_ROOT = None
         self.UNIVERSITY_CODE = None
         self.LOG_PATH = None
         normalized_settings = self.normalize_settings( settings )
         self.update_properties( normalized_settings )
+        self.authentication_id = None
 
     def normalize_settings( self, settings ):
         """ Returns a settings module regardless of module or dict or settings-path.
@@ -36,12 +37,18 @@ class BorrowDirect( object ):
     def update_properties( self, settings ):
         """ Sets main properties.
             Called by __init__() """
-        self.BD_API_URL = None if ( u'BD_API_URL' not in dir(settings) ) else settings.BD_API_URL
+        self.API_AUTH_URL_ROOT = None if ( u'API_AUTH_URL_ROOT' not in dir(settings) ) else settings.API_AUTH_URL_ROOT
         self.UNIVERSITY_CODE = None if ( u'UNIVERSITY_CODE' not in dir(settings) ) else settings.UNIVERSITY_CODE
         self.LOG_PATH = None if ( u'LOG_PATH' not in dir(settings) ) else settings.LOG_PATH
         return
 
     def say_hi( self ):
-        print u'BD_API_URL, %s' % self.BD_API_URL
+        print u'API_AUTH_URL_ROOT, %s' % self.API_AUTH_URL_ROOT
         print u'UNIVERSITY_CODE, %s' % self.UNIVERSITY_CODE
         print u'LOG_PATH, %s' % self.LOG_PATH
+
+    def run_auth_nz( self ):
+        """ Runs authN/Z and stores authentication-id.
+            Called manually. """
+        return u'foo'
+
