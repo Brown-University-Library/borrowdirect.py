@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import imp
+import imp, pprint
+import requests
 from types import ModuleType, NoneType
 
 
@@ -19,6 +20,7 @@ class BorrowDirect( object ):
         normalized_settings = self.normalize_settings( settings )
         self.update_properties( normalized_settings )
         self.authentication_id = None
+        self.authnz_is_valid = False
 
     def normalize_settings( self, settings ):
         """ Returns a settings module regardless of module or dict or settings-path.
@@ -47,8 +49,14 @@ class BorrowDirect( object ):
         print u'UNIVERSITY_CODE, %s' % self.UNIVERSITY_CODE
         print u'LOG_PATH, %s' % self.LOG_PATH
 
-    def run_auth_nz( self ):
+    def run_auth_nz( self, patron_barcode ):
         """ Runs authN/Z and stores authentication-id.
             Called manually. """
+        ## authn
+        d = { u'AuthenticationInformation': {
+                u'LibrarySymbol': self.UNIVERSITY_CODE,
+                u'PatronId': patron_barcode } }
+        headers = { u'Content-type': u'application/json', u'Accept': u'text/plain'}
+        r = requests.post( self.API_AUTH_URL_ROOT, data=json.dumps(d), headers=headers )
+        pprint.pprint( r.content )
         return u'foo'
-

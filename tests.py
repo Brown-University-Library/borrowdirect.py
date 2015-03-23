@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import exceptions, imp, pprint, unittest
+import exceptions, imp, pprint, os, unittest
 from bdpy import BorrowDirect
 
 
@@ -35,10 +35,15 @@ class BorrowDirectTests( unittest.TestCase ):
 
     def test_run_auth_nz(self):
         """ Tests successful and unsucessful authN/Z. """
-        bd = BorrowDirect()
+        settings = {
+            u'UNIVERSITY_CODE': os.environ.get( u'BDPY_TEST__UNIVERSITY_CODE' ),
+            u'API_AUTH_URL_ROOT': os.environ.get( u'BDPY_TEST__API_AUTH_URL_ROOT' ),
+            u'LOG_PATH': os.environ.get( u'BDPY_TEST__LOG_PATH' ) }
+        bd = BorrowDirect( settings )
         bd.run_auth_nz()
+        patron_id = os.environ.get( u'BDPY_TEST__GOOD_PATRON_BARCODE' )
         self.assertEqual(
-            True, bd.auth_nz_valid )
+            True, bd.authnz_is_valid )
 
 
 
