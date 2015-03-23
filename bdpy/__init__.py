@@ -1,1 +1,1 @@
-from bdpy import BorrowDirect
+from .bdpy import BorrowDirect
