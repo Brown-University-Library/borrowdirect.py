@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import imp, pprint
+import imp, json, logging, pprint
 import requests
 from types import ModuleType, NoneType
+
+
+# logging.basicConfig( filename=None, level=logging.INFO )
 
 
 class BorrowDirect( object ):
@@ -13,12 +16,16 @@ class BorrowDirect( object ):
         - Allows a settings module to be passed in,
             or a settings path to be passed in,
             or a dictionary to be passed in. """
-        ## general
-        self.API_AUTH_URL_ROOT = None
-        self.UNIVERSITY_CODE = None
-        self.LOG_PATH = None
+        ## general init
+        self.API_AUTH_URL_ROOT = u'init'
+        self.UNIVERSITY_CODE = u'init'
+        self.LOG_PATH = u'init'
+        self.LOG_LEVEL = u'init'
+        ## calcs
         normalized_settings = self.normalize_settings( settings )
         self.update_properties( normalized_settings )
+        self.setup_log()
+        ## prepared
         self.authentication_id = None
         self.authnz_is_valid = False
 
@@ -32,7 +39,7 @@ class BorrowDirect( object ):
           for k, v in settings.items():
             setattr( s, k, v )
           settings = s
-        elif isinstance(settings, unicode):  # path
+        elif isinstance( settings, unicode ):  # path
           settings = imp.load_source( u'*', settings )
         return settings
 
@@ -42,6 +49,16 @@ class BorrowDirect( object ):
         self.API_AUTH_URL_ROOT = None if ( u'API_AUTH_URL_ROOT' not in dir(settings) ) else settings.API_AUTH_URL_ROOT
         self.UNIVERSITY_CODE = None if ( u'UNIVERSITY_CODE' not in dir(settings) ) else settings.UNIVERSITY_CODE
         self.LOG_PATH = None if ( u'LOG_PATH' not in dir(settings) ) else settings.LOG_PATH
+        self.LOG_LEVEL = u'DEBUG' if ( u'LOG_LEVEL' not in dir(settings) ) else settings.LOG_LEVEL
+        return
+
+    def setup_log( self ):
+        """ Configures log path and level.
+            Called by __init__() """
+        log_level = {
+            u'DEBUG': logging.DEBUG,
+            u'INFO': logging.INFO, }
+        logging.basicConfig( filename=self.LOG_PATH, level=log_level[self.LOG_LEVEL] )
         return
 
     def say_hi( self ):
@@ -52,6 +69,8 @@ class BorrowDirect( object ):
     def run_auth_nz( self, patron_barcode ):
         """ Runs authN/Z and stores authentication-id.
             Called manually. """
+        logging.info( u'run_auth_nz() starting...' )
+        logging.info( u'run_auth_nz() url, `%s`' % self.API_AUTH_URL_ROOT )
         ## authn
         d = { u'AuthenticationInformation': {
                 u'LibrarySymbol': self.UNIVERSITY_CODE,

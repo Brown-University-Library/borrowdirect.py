@@ -35,13 +35,12 @@ class BorrowDirectTests( unittest.TestCase ):
 
     def test_run_auth_nz(self):
         """ Tests successful and unsucessful authN/Z. """
+        ## good patron
         settings = {
             u'UNIVERSITY_CODE': os.environ.get( u'BDPY_TEST__UNIVERSITY_CODE' ),
-            u'API_AUTH_URL_ROOT': os.environ.get( u'BDPY_TEST__API_AUTH_URL_ROOT' ),
-            u'LOG_PATH': os.environ.get( u'BDPY_TEST__LOG_PATH' ) }
+            u'API_AUTH_URL_ROOT': os.environ.get( u'BDPY_TEST__API_AUTH_URL_ROOT' ), }
         bd = BorrowDirect( settings )
-        bd.run_auth_nz()
-        patron_id = os.environ.get( u'BDPY_TEST__GOOD_PATRON_BARCODE' )
+        bd.run_auth_nz( os.environ.get(u'BDPY_TEST__GOOD_PATRON_BARCODE') )
         self.assertEqual(
             True, bd.authnz_is_valid )
 
