@@ -6,6 +6,9 @@ from bdpy import BorrowDirect
 
 class BorrowDirectTests( unittest.TestCase ):
 
+    def setUp(self):
+        self.LOG_PATH = unicode( os.environ[u'BDPY_TEST__LOG_PATH'] )
+
     def test_settings_instantiation(self):
         """ Tests that module instantiation handles settings not-defined, or defined as dict, module, or path. """
         ## no settings passed on instantiation
@@ -37,10 +40,11 @@ class BorrowDirectTests( unittest.TestCase ):
         """ Tests successful and unsucessful authN/Z. """
         ## good patron
         settings = {
-            u'UNIVERSITY_CODE': os.environ.get( u'BDPY_TEST__UNIVERSITY_CODE' ),
-            u'API_AUTH_URL_ROOT': os.environ.get( u'BDPY_TEST__API_AUTH_URL_ROOT' ), }
+            u'UNIVERSITY_CODE': unicode( os.environ[u'BDPY_TEST__UNIVERSITY_CODE'] ),
+            u'API_AUTH_URL_ROOT': unicode( os.environ[u'BDPY_TEST__API_AUTH_URL_ROOT'] ),
+            u'LOG_PATH': self.LOG_PATH }  # 'LOG_PATH': None  ...outputs to console
         bd = BorrowDirect( settings )
-        bd.run_auth_nz( os.environ.get(u'BDPY_TEST__GOOD_PATRON_BARCODE') )
+        bd.run_auth_nz( unicode(os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD']) )
         self.assertEqual(
             True, bd.authnz_is_valid )
 

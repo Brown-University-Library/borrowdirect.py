@@ -21,6 +21,7 @@ class BorrowDirect( object ):
         self.UNIVERSITY_CODE = u'init'
         self.LOG_PATH = u'init'
         self.LOG_LEVEL = u'init'
+        self.logger = u'init'
         ## calcs
         normalized_settings = self.normalize_settings( settings )
         self.update_properties( normalized_settings )
@@ -58,7 +59,10 @@ class BorrowDirect( object ):
         log_level = {
             u'DEBUG': logging.DEBUG,
             u'INFO': logging.INFO, }
-        logging.basicConfig( filename=self.LOG_PATH, level=log_level[self.LOG_LEVEL] )
+        logging.basicConfig(
+            filename=self.LOG_PATH, level=log_level[self.LOG_LEVEL],
+            format='dt %(asctime)s | ln %(lineno)d | md %(module)s | fn %(funcName)s | %(message)s' )
+        self.logger = logging.getLogger(__name__)
         return
 
     def say_hi( self ):
@@ -69,13 +73,14 @@ class BorrowDirect( object ):
     def run_auth_nz( self, patron_barcode ):
         """ Runs authN/Z and stores authentication-id.
             Called manually. """
-        logging.info( u'run_auth_nz() starting...' )
-        logging.info( u'run_auth_nz() url, `%s`' % self.API_AUTH_URL_ROOT )
+        self.logger.info( u'starting...' )
+        self.logger.info( u'url, `%s`' % self.API_AUTH_URL_ROOT )
         ## authn
-        d = { u'AuthenticationInformation': {
-                u'LibrarySymbol': self.UNIVERSITY_CODE,
-                u'PatronId': patron_barcode } }
+        d = {
+            u'AuthenticationInformation': {
+            u'LibrarySymbol': self.UNIVERSITY_CODE,
+            u'PatronId': patron_barcode } }
         headers = { u'Content-type': u'application/json', u'Accept': u'text/plain'}
-        r = requests.post( self.API_AUTH_URL_ROOT, data=json.dumps(d), headers=headers )
-        pprint.pprint( r.content )
+        # r = requests.post( self.API_AUTH_URL_ROOT, data=json.dumps(d), headers=headers )
+        # pprint.pprint( r.content )
         return u'foo'
