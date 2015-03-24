@@ -29,9 +29,7 @@ class BorrowDirect( object ):
         self.authnz_is_valid = None
 
     def say_hi( self ):
-        print u'API_AUTH_URL_ROOT, %s' % self.API_AUTH_URL_ROOT
-        print u'UNIVERSITY_CODE, %s' % self.UNIVERSITY_CODE
-        print u'LOG_PATH, %s' % self.LOG_PATH
+        print u'hello_world'
 
     def run_auth_nz( self, patron_barcode ):
         """ Runs authN/Z and stores authentication-id.
