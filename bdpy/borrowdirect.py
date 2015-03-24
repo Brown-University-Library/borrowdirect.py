@@ -3,6 +3,7 @@
 import imp, json, logging, pprint
 import requests
 from types import ModuleType, NoneType
+from .auth import Authenticator
 
 
 class BorrowDirect( object ):
@@ -34,23 +35,13 @@ class BorrowDirect( object ):
     def run_auth_nz( self, patron_barcode ):
         """ Runs authN/Z and stores authentication-id.
             Called manually. """
-        self.logger.debug( u'starting...' )
-        self.logger.debug( u'url, `%s`' % self.API_AUTH_URL_ROOT )
-        ## authn - get the borrowdirect authentication-id
-        d = {
-            u'AuthenticationInformation': {
-            u'LibrarySymbol': self.UNIVERSITY_CODE,
-            u'PatronId': patron_barcode } }
-        self.logger.debug( u'params-dict, `%s`' % pprint.pformat(d) )
-        headers = { u'Content-type': u'application/json', u'Accept': u'text/plain'}
-        r = requests.post( self.API_AUTH_URL_ROOT, data=json.dumps(d), headers=headers )
-        self.logger.debug( u'r.content, `%s`' % r.content.decode(u'utf-8') )
-        self.logger.debug( u'r.status_code, `%s`' % r.status_code )
-        dct = r.json()
-        self.logger.debug( u'response dct, `%s`' % pprint.pformat(dct) )
-        self.AId = dct[u'Authentication'][u'AuthnUserInfo'][u'AId']
+        self.logger.debug( u'starting' )
+        authr = Authenticator( self.logger )
+        authentication_id = authr.authenticate(
+            patron_barcode, self.API_AUTH_URL_ROOT, self.UNIVERSITY_CODE )
+        self.AId = authentication_id
         self.logger.debug( u'self.AId, `%s`' % self.AId )
-        return u'foo'
+        return
 
     # end class BorrowDirect
 
