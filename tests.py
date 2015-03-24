@@ -41,12 +41,13 @@ class BorrowDirectTests( unittest.TestCase ):
         ## good patron
         settings = {
             u'UNIVERSITY_CODE': unicode( os.environ[u'BDPY_TEST__UNIVERSITY_CODE'] ),
-            u'API_AUTH_URL_ROOT': unicode( os.environ[u'BDPY_TEST__API_AUTH_URL_ROOT'] ),
+            u'API_AUTHENTICATION_URL': unicode( os.environ[u'BDPY_TEST__API_AUTHENTICATION_URL'] ),
+            u'API_AUTHORIZATION_URL': unicode( os.environ[u'BDPY_TEST__API_AUTHORIZATION_URL'] ),
             u'LOG_PATH': self.LOG_PATH }  # 'LOG_PATH': None  ...outputs to console
         bd = BorrowDirect( settings )
         bd.run_auth_nz( unicode(os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD']) )
         self.assertEqual(
-            True, bd.authnz_is_valid )
+            True, bd.authnz_valid )
 
 
 

@@ -15,7 +15,8 @@ class BorrowDirect( object ):
             or a settings path to be passed in,
             or a dictionary to be passed in. """
         ## general initialization
-        self.API_AUTH_URL_ROOT = None
+        self.API_AUTHENTICATION_URL = None
+        self.API_AUTHORIZATION_URL = None
         self.UNIVERSITY_CODE = None
         self.LOG_PATH = None
         self.LOG_LEVEL = None
@@ -27,7 +28,7 @@ class BorrowDirect( object ):
         bdh.setup_log( self )
         ## updated by workflow
         self.AId = None
-        self.authnz_is_valid = None
+        self.authnz_valid = None
 
     def say_hi( self ):
         print u'hello_world'
@@ -37,10 +38,11 @@ class BorrowDirect( object ):
             Called manually. """
         self.logger.debug( u'starting' )
         authr = Authenticator( self.logger )
-        authentication_id = authr.authenticate(
-            patron_barcode, self.API_AUTH_URL_ROOT, self.UNIVERSITY_CODE )
-        self.AId = authentication_id
+        self.AId = authr.authenticate(
+            patron_barcode, self.API_AUTHENTICATION_URL, self.UNIVERSITY_CODE )
         self.logger.debug( u'self.AId, `%s`' % self.AId )
+        self.authnz_valid = authr.authorize(
+            self.API_AUTHORIZATION_URL, self.AId )
         return
 
     # end class BorrowDirect
@@ -67,7 +69,8 @@ class BorrowDirectHelper( object ):
     def update_properties( self, bd_instance, settings ):
         """ Sets main properties.
             Called by BorrowDirect.__init__() """
-        bd_instance.API_AUTH_URL_ROOT = None if ( u'API_AUTH_URL_ROOT' not in dir(settings) ) else settings.API_AUTH_URL_ROOT
+        bd_instance.API_AUTHENTICATION_URL = None if ( u'API_AUTHENTICATION_URL' not in dir(settings) ) else settings.API_AUTHENTICATION_URL
+        bd_instance.API_AUTHORIZATION_URL = None if ( u'API_AUTHORIZATION_URL' not in dir(settings) ) else settings.API_AUTHORIZATION_URL
         bd_instance.UNIVERSITY_CODE = None if ( u'UNIVERSITY_CODE' not in dir(settings) ) else settings.UNIVERSITY_CODE
         bd_instance.LOG_PATH = None if ( u'LOG_PATH' not in dir(settings) ) else settings.LOG_PATH
         bd_instance.LOG_LEVEL = u'DEBUG' if ( u'LOG_LEVEL' not in dir(settings) ) else settings.LOG_LEVEL
