@@ -6,9 +6,7 @@ _under development_
 
 _( formatted in [markdown](http://daringfireball.net/projects/markdown/) )_
 
-
-
-### on this page... ###
+on this page...
 
 - installation
 - common usage
@@ -56,7 +54,7 @@ _( formatted in [markdown](http://daringfireball.net/projects/markdown/) )_
 ### notes ###
 
 - instantiation is flexible
-    - you can pass in a settings-module, or a settings-module-path, or nothing
+    - you can pass in a settings-module, or a settings-module-path, or nothing (but then set the class-attributes directly)
     - the patron-barcode can be included in settings
     - todo: if patron barcode is passed in, authNZ will kick off automatically, so you can get right to searching & requesting
 
