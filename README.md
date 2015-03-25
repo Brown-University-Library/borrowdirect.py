@@ -58,13 +58,15 @@ on this page...
     - the patron-barcode can be included in settings
     - todo: if patron barcode is passed in, authNZ will kick off automatically, so you can get right to searching & requesting
 
+- contact: birkin_diana@brown.edu
+
 
 
 ### license ###
 
 The [MIT License](http://opensource.org/licenses/MIT) (MIT)
 
-    Copyright (c) 2015 birkin_diana@brown.edu/brown.edu
+    Copyright (c) 2015 http://library.brown.edu/its/
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
