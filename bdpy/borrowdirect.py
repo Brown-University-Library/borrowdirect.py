@@ -36,13 +36,13 @@ class BorrowDirect( object ):
     def run_auth_nz( self, patron_barcode ):
         """ Runs authN/Z and stores authentication-id.
             Called manually. """
-        self.logger.debug( u'starting' )
+        self.logger.debug( u'starting auth-nz...' )
         authr = Authenticator( self.logger )
         self.AId = authr.authenticate(
             patron_barcode, self.API_AUTHENTICATION_URL, self.UNIVERSITY_CODE )
-        self.logger.debug( u'self.AId, `%s`' % self.AId )
         self.authnz_valid = authr.authorize(
             self.API_AUTHORIZATION_URL, self.AId )
+        self.logger.info( u'auth-nz complete' )
         return
 
     # end class BorrowDirect
