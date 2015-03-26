@@ -17,6 +17,8 @@ class BorrowDirect( object ):
         ## general initialization
         self.API_AUTHENTICATION_URL = None
         self.API_AUTHORIZATION_URL = None
+        self.API_SEARCH_URL = None
+        self.API_PARTNERSHIP_ID = None
         self.UNIVERSITY_CODE = None
         self.LOG_PATH = None
         self.LOG_LEVEL = None
@@ -29,6 +31,7 @@ class BorrowDirect( object ):
         ## updated by workflow
         self.AId = None
         self.authnz_valid = None
+        self.search_result = None
 
     def say_hi( self ):
         print u'hello_world'
@@ -44,6 +47,58 @@ class BorrowDirect( object ):
             self.API_AUTHORIZATION_URL, self.AId )
         self.logger.info( u'auth-nz complete' )
         return
+
+    def search( self, patron_barcode, key, value ):
+        """ Searches for exact key-value.
+            Called manually. """
+        assert key in [ u'ISBN', u'ISSN', u'LCCN', u'OCLC', u'PHRASE' ]
+        params = {
+            u'PartnershipId': self.API_PARTNERSHIP_ID,
+            u'AuthorizationId': self.AId,
+            # u'Credentials': {
+            #     u'LibrarySymbol': self.UNIVERSITY_CODE,
+            #     u'Barcode': patron_barcode
+            #     },
+            u'ExactSearch': [ {
+                u'Type': key,
+                u'Value': value
+                } ]
+            }
+        self.logger.debug( u'params, `%s`' % pprint.pformat(params) )
+        self.logger.debug( u'self.API_SEARCH_URL, `%s`' % self.API_SEARCH_URL )
+        headers = { u'Content-type': u'application/json' }
+        r = requests.post( self.API_SEARCH_URL, data=json.dumps(params), headers=headers )
+        self.logger.debug( u'search r.content, `%s`' % r.content.decode(u'utf-8') )
+        self.logger.debug( u'search r.url, `%s`' % r.url )
+        dct = r.json()
+        self.logger.debug( u'search dct, `%s`' % pprint.pformat(dct) )
+        pass
+
+    # def search( self, patron_barcode, key, value ):
+    #     """ Searches for exact key-value.
+    #         Called manually. """
+    #     assert key in [ u'ISBN', u'ISSN', u'LCCN', u'OCLC', u'PHRASE' ]
+    #     params = {
+    #         u'PartnershipId': self.API_PARTNERSHIP_ID,
+    #         # u'AuthorizationId': self.AId,
+    #         u'Credentials': {
+    #             u'LibrarySymbol': self.UNIVERSITY_CODE,
+    #             u'Barcode': patron_barcode
+    #             },
+    #         u'ExactSearch': [ {
+    #             u'Type': key,
+    #             u'Value': value
+    #             } ]
+    #         }
+    #     self.logger.debug( u'params, `%s`' % pprint.pformat(params) )
+    #     self.logger.debug( u'self.API_SEARCH_URL, `%s`' % self.API_SEARCH_URL )
+    #     headers = { u'Content-type': u'application/json' }
+    #     r = requests.post( self.API_SEARCH_URL, data=json.dumps(params), headers=headers )
+    #     self.logger.debug( u'search r.content, `%s`' % r.content.decode(u'utf-8') )
+    #     self.logger.debug( u'search r.url, `%s`' % r.url )
+    #     dct = r.json()
+    #     self.logger.debug( u'search dct, `%s`' % pprint.pformat(dct) )
+    #     pass
 
     # end class BorrowDirect
 
@@ -71,6 +126,8 @@ class BorrowDirectHelper( object ):
             Called by BorrowDirect.__init__() """
         bd_instance.API_AUTHENTICATION_URL = None if ( u'API_AUTHENTICATION_URL' not in dir(settings) ) else settings.API_AUTHENTICATION_URL
         bd_instance.API_AUTHORIZATION_URL = None if ( u'API_AUTHORIZATION_URL' not in dir(settings) ) else settings.API_AUTHORIZATION_URL
+        bd_instance.API_SEARCH_URL = None if ( u'API_SEARCH_URL' not in dir(settings) ) else settings.API_SEARCH_URL
+        bd_instance.API_PARTNERSHIP_ID = None if ( u'API_PARTNERSHIP_ID' not in dir(settings) ) else settings.API_PARTNERSHIP_ID
         bd_instance.UNIVERSITY_CODE = None if ( u'UNIVERSITY_CODE' not in dir(settings) ) else settings.UNIVERSITY_CODE
         bd_instance.LOG_PATH = None if ( u'LOG_PATH' not in dir(settings) ) else settings.LOG_PATH
         bd_instance.LOG_LEVEL = u'DEBUG' if ( u'LOG_LEVEL' not in dir(settings) ) else settings.LOG_LEVEL

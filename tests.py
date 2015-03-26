@@ -39,15 +39,48 @@ class BorrowDirectTests( unittest.TestCase ):
     def test_run_auth_nz(self):
         """ Tests successful and unsucessful authN/Z. """
         ## good patron
-        settings = {
+        data = {
             u'UNIVERSITY_CODE': unicode( os.environ[u'BDPY_TEST__UNIVERSITY_CODE'] ),
             u'API_AUTHENTICATION_URL': unicode( os.environ[u'BDPY_TEST__API_AUTHENTICATION_URL'] ),
             u'API_AUTHORIZATION_URL': unicode( os.environ[u'BDPY_TEST__API_AUTHORIZATION_URL'] ),
             u'LOG_PATH': self.LOG_PATH }  # 'LOG_PATH': None  ...outputs to console
-        bd = BorrowDirect( settings )
+        bd = BorrowDirect( data )
         bd.run_auth_nz( unicode(os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD']) )
         self.assertEqual(
             True, bd.authnz_valid )
+
+    # def test_search(self):
+    #     """ Tests item availability. """
+    #     data = {
+    #         u'UNIVERSITY_CODE': unicode( os.environ[u'BDPY_TEST__UNIVERSITY_CODE'] ),
+    #         # u'API_AUTHENTICATION_URL': unicode( os.environ[u'BDPY_TEST__API_AUTHENTICATION_URL'] ),
+    #         # u'API_AUTHORIZATION_URL': unicode( os.environ[u'BDPY_TEST__API_AUTHORIZATION_URL'] ),
+    #         u'API_SEARCH_URL': unicode( os.environ[u'BDPY_TEST__API_SEARCH_URL'] ),
+    #         u'API_PARTNERSHIP_ID': unicode( os.environ[u'BDPY_TEST__PARTNERSHIP_ID'] ),
+    #         u'LOG_PATH': self.LOG_PATH }  # 'LOG_PATH': None  ...outputs to console
+    #     bd = BorrowDirect( data )
+    #     patron_barcode = unicode(os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD'])
+    #     # bd.run_auth_nz( patron_barcode )
+    #     # bd.search( patron_barcode, u'ISBN', u'9780688002305' )  # Zen & the Art of Motorcycle Maintenance (also #0688002307)
+    #     bd.search( patron_barcode, u'ISBN', u'9780307269706' )
+    #     self.assertEqual(
+    #         2, bd.search_result )
+
+    def test_search(self):
+        """ Tests item availability. """
+        data = {
+            u'UNIVERSITY_CODE': unicode( os.environ[u'BDPY_TEST__UNIVERSITY_CODE'] ),
+            u'API_AUTHENTICATION_URL': unicode( os.environ[u'BDPY_TEST__API_AUTHENTICATION_URL'] ),
+            u'API_AUTHORIZATION_URL': unicode( os.environ[u'BDPY_TEST__API_AUTHORIZATION_URL'] ),
+            u'API_SEARCH_URL': unicode( os.environ[u'BDPY_TEST__API_SEARCH_URL'] ),
+            u'API_PARTNERSHIP_ID': unicode( os.environ[u'BDPY_TEST__PARTNERSHIP_ID'] ),
+            u'LOG_PATH': self.LOG_PATH }  # 'LOG_PATH': None  ...outputs to console
+        bd = BorrowDirect( data )
+        patron_barcode = unicode(os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD'])
+        bd.run_auth_nz( patron_barcode )
+        bd.search( patron_barcode, u'ISBN', u'9780688002305' )  # Zen & the Art of Motorcycle Maintenance (also #0688002307)
+        self.assertEqual(
+            2, bd.search_result )
 
 
 
