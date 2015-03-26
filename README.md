@@ -20,11 +20,9 @@ on this page...
 - for now:
 
         $ pip install requests
-        $ pip install git+git://github.com/birkin/borrowdirect.py.git@0.3-dev
+        $ pip install git+git://github.com/birkin/borrowdirect.py.git@0.4-dev
 
 - best to install a release version while it's under development; sometimes I check-in code that's not fully working
-
-- todo: load to [pypi](https://pypi.python.org/pypi)
 
 - one dependency: the awesome [requests](http://docs.python-requests.org/en/latest/) module
 
@@ -34,18 +32,27 @@ on this page...
 
 (works)
 
-    >>> from bdpy import BorrowDirect
-    >>> settings = { u'UNIVERSITY_CODE': the_university_code, u'API_AUTHENTICATION_URL': the_authentication_url, u'API_AUTHORIZATION_URL': the_authorization_url }
-    >>> bd = BorrowDirect( settings )
-    >>> bd.run_auth_nz( a_patron_barcode )  # performs authN/Z & stores authentication-id
-    >>> bd.AId  # authoriztion-id
-    u'abc...'
-    >>> bd.bd.authnz_valid
-    True
+- auth
+
+        >>> from bdpy import BorrowDirect
+        >>> defaults = { 'UNIVERSITY_CODE': the_code, 'API_URL': the_url_root }
+        >>> bd = BorrowDirect( defaults )
+        >>> bd.run_auth_nz( a_patron_barcode )  # performs authN/Z & stores authentication-id
+        >>> bd.AId  # authoriztion-id
+        u'abc...'
+        >>> bd.bd.authnz_valid
+        True
+
+- search
+
+        >>> from bdpy import BorrowDirect
+        >>> defaults = { 'UNIVERSITY_CODE': the_code, 'API_URL': the_url_root, 'API_PARTNERSHIP_ID': the_id }
+        >>> bd = BorrowDirect( defaults )
+        >>> result_dct = bd.search( a_patron_barcode, u'ISBN', u'9780688002305' )
+        >>> sorted( result_dct['Item'].keys() )
+        [u'AuthorizationId', u'Available', u'PickupLocations', u'SearchTerm']
 
 (todo)
-
-    >>> bd.search( the_isbn )  # output TBD
 
     >>> bd.request( the_isbn )  # output TBD
 
@@ -53,10 +60,8 @@ on this page...
 
 ### notes ###
 
-- instantiation is flexible
+- BorrowDirect() instantiation is flexible
     - you can pass in a settings-module, or a settings-module-path, or nothing (but then set the class-attributes directly)
-    - the patron-barcode can be included in settings
-    - todo: if patron barcode is passed in, authNZ will kick off automatically, so you can get right to searching & requesting
 
 - contact: birkin_diana@brown.edu
 
