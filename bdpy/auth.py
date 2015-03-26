@@ -11,7 +11,7 @@ class Authenticator( object ):
     def __init__( self, logger ):
         self.logger = logger
 
-    def authenticate( self, patron_barcode, authentication_url, university_code ):
+    def authenticate( self, patron_barcode, api_url, university_code ):
         """ Accesses and returns authentication-id for storage.
             Called by BorrowDirect.run_auth_nz() """
         d = {
@@ -19,16 +19,18 @@ class Authenticator( object ):
             u'LibrarySymbol': university_code,
             u'PatronId': patron_barcode } }
         headers = { u'Content-type': u'application/json', u'Accept': u'text/plain'}
-        r = requests.post( authentication_url, data=json.dumps(d), headers=headers )
+        url = u'%s/portal-service/user/authentication/patron' % api_url
+        r = requests.post( url, data=json.dumps(d), headers=headers )
         dct = r.json()
         authentication_id = dct[u'Authentication'][u'AuthnUserInfo'][u'AId']
         self.logger.debug( u'authentication_id, `%s`' % authentication_id )
         return authentication_id
 
-    def authorize( self, authentication_url, authentication_id ):
+    def authorize( self, api_url, authentication_id ):
         """ Checks authorization and extends authentication session time.
             Called by BorrowDirect.run_auth_nz() """
-        url = u'%s?aid=%s' % ( authentication_url, authentication_id )
+        url = u'%s/portal-service/user/authz/isAuthorized?aid=%s' % ( api_url, authentication_id )
+        # url = u'%s?aid=%s' % ( authentication_url, authentication_id )
         r = requests.get( url )
         dct = r.json()
         state = dct[u'AuthorizationResult'][u'AuthorizationState'][u'State']  # boolean
