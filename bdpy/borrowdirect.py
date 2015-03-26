@@ -54,11 +54,11 @@ class BorrowDirect( object ):
         assert key in [ u'ISBN', u'ISSN', u'LCCN', u'OCLC', u'PHRASE' ]
         params = {
             u'PartnershipId': self.API_PARTNERSHIP_ID,
-            u'AuthorizationId': self.AId,
-            # u'Credentials': {
-            #     u'LibrarySymbol': self.UNIVERSITY_CODE,
-            #     u'Barcode': patron_barcode
-            #     },
+            # u'AuthorizationId': self.AId,
+            u'Credentials': {
+                u'LibrarySymbol': self.UNIVERSITY_CODE,
+                u'Barcode': patron_barcode
+                },
             u'ExactSearch': [ {
                 u'Type': key,
                 u'Value': value
@@ -72,33 +72,7 @@ class BorrowDirect( object ):
         self.logger.debug( u'search r.url, `%s`' % r.url )
         dct = r.json()
         self.logger.debug( u'search dct, `%s`' % pprint.pformat(dct) )
-        pass
-
-    # def search( self, patron_barcode, key, value ):
-    #     """ Searches for exact key-value.
-    #         Called manually. """
-    #     assert key in [ u'ISBN', u'ISSN', u'LCCN', u'OCLC', u'PHRASE' ]
-    #     params = {
-    #         u'PartnershipId': self.API_PARTNERSHIP_ID,
-    #         # u'AuthorizationId': self.AId,
-    #         u'Credentials': {
-    #             u'LibrarySymbol': self.UNIVERSITY_CODE,
-    #             u'Barcode': patron_barcode
-    #             },
-    #         u'ExactSearch': [ {
-    #             u'Type': key,
-    #             u'Value': value
-    #             } ]
-    #         }
-    #     self.logger.debug( u'params, `%s`' % pprint.pformat(params) )
-    #     self.logger.debug( u'self.API_SEARCH_URL, `%s`' % self.API_SEARCH_URL )
-    #     headers = { u'Content-type': u'application/json' }
-    #     r = requests.post( self.API_SEARCH_URL, data=json.dumps(params), headers=headers )
-    #     self.logger.debug( u'search r.content, `%s`' % r.content.decode(u'utf-8') )
-    #     self.logger.debug( u'search r.url, `%s`' % r.url )
-    #     dct = r.json()
-    #     self.logger.debug( u'search dct, `%s`' % pprint.pformat(dct) )
-    #     pass
+        return dct
 
     # end class BorrowDirect
 
