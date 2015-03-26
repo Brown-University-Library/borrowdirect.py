@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import imp, json, logging, pprint
+import imp, json, logging, pprint, time
 import requests
 from types import ModuleType, NoneType
 from .auth import Authenticator
@@ -15,9 +15,7 @@ class BorrowDirect( object ):
             or a settings path to be passed in,
             or a dictionary to be passed in. """
         ## general initialization
-        self.API_AUTHENTICATION_URL = None
-        self.API_AUTHORIZATION_URL = None
-        self.API_SEARCH_URL = None
+        self.API_URL_ROOT = None
         self.API_PARTNERSHIP_ID = None
         self.UNIVERSITY_CODE = None
         self.LOG_PATH = None
@@ -42,9 +40,10 @@ class BorrowDirect( object ):
         self.logger.debug( u'starting auth-nz...' )
         authr = Authenticator( self.logger )
         self.AId = authr.authenticate(
-            patron_barcode, self.API_AUTHENTICATION_URL, self.UNIVERSITY_CODE )
+            patron_barcode, self.API_URL_ROOT, self.UNIVERSITY_CODE )
+        time.sleep( 1 )
         self.authnz_valid = authr.authorize(
-            self.API_AUTHORIZATION_URL, self.AId )
+            self.API_URL_ROOT, self.AId )
         self.logger.info( u'auth-nz complete' )
         return
 
@@ -65,9 +64,10 @@ class BorrowDirect( object ):
                 } ]
             }
         self.logger.debug( u'params, `%s`' % pprint.pformat(params) )
-        self.logger.debug( u'self.API_SEARCH_URL, `%s`' % self.API_SEARCH_URL )
+        url = u'%s/dws/item/available' % self.API_URL_ROOT
+        self.logger.debug( u'url, `%s`' % url )
         headers = { u'Content-type': u'application/json' }
-        r = requests.post( self.API_SEARCH_URL, data=json.dumps(params), headers=headers )
+        r = requests.post( url, data=json.dumps(params), headers=headers )
         self.logger.debug( u'search r.content, `%s`' % r.content.decode(u'utf-8') )
         self.logger.debug( u'search r.url, `%s`' % r.url )
         dct = r.json()
@@ -98,9 +98,7 @@ class BorrowDirectHelper( object ):
     def update_properties( self, bd_instance, settings ):
         """ Sets main properties.
             Called by BorrowDirect.__init__() """
-        bd_instance.API_AUTHENTICATION_URL = None if ( u'API_AUTHENTICATION_URL' not in dir(settings) ) else settings.API_AUTHENTICATION_URL
-        bd_instance.API_AUTHORIZATION_URL = None if ( u'API_AUTHORIZATION_URL' not in dir(settings) ) else settings.API_AUTHORIZATION_URL
-        bd_instance.API_SEARCH_URL = None if ( u'API_SEARCH_URL' not in dir(settings) ) else settings.API_SEARCH_URL
+        bd_instance.API_URL_ROOT = None if ( u'API_URL_ROOT' not in dir(settings) ) else settings.API_URL_ROOT
         bd_instance.API_PARTNERSHIP_ID = None if ( u'API_PARTNERSHIP_ID' not in dir(settings) ) else settings.API_PARTNERSHIP_ID
         bd_instance.UNIVERSITY_CODE = None if ( u'UNIVERSITY_CODE' not in dir(settings) ) else settings.UNIVERSITY_CODE
         bd_instance.LOG_PATH = None if ( u'LOG_PATH' not in dir(settings) ) else settings.LOG_PATH
