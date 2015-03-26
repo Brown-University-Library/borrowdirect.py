@@ -24,7 +24,7 @@ on this page...
 
 - best to install a release version while it's under development; sometimes I check-in code that's not fully working
 
-- one dependency: the awesome [requests](http://docs.python-requests.org/en/latest/) module
+- one dependency: the awesome [requests](http://docs.python-requests.org/en/latest/) module, which is automatically pip-installed if necessary in the 0.5-dev and later releases
 
 
 
