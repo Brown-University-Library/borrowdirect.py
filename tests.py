@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 
-import exceptions, imp, pprint, os, unittest
+import exceptions, imp, pprint, os, time, unittest
 from bdpy import BorrowDirect
 from bdpy.auth import Authenticator
+
+
+SLEEP_SECONDS = 2  # test-server is creaky
 
 
 class BorrowDirectTests( unittest.TestCase ):
 
     def setUp(self):
         self.LOG_PATH = unicode( os.environ[u'BDPY_TEST__LOG_PATH'] )  # if None  ...outputs to console
+        time.sleep( SLEEP_SECONDS )
 
     def test_settings_instantiation(self):
         """ Tests that module instantiation handles settings not-defined, or defined as dict, module, or path. """
@@ -41,8 +45,7 @@ class BorrowDirectTests( unittest.TestCase ):
         ## good patron
         data = {
             u'UNIVERSITY_CODE': unicode( os.environ[u'BDPY_TEST__UNIVERSITY_CODE'] ),
-            u'API_AUTHENTICATION_URL': unicode( os.environ[u'BDPY_TEST__API_AUTHENTICATION_URL'] ),
-            u'API_AUTHORIZATION_URL': unicode( os.environ[u'BDPY_TEST__API_AUTHORIZATION_URL'] ),
+            u'API_URL_ROOT': unicode( os.environ[u'BDPY_TEST__API_URL_ROOT'] ),
             u'LOG_PATH': self.LOG_PATH }
         bd = BorrowDirect( data )
         bd.run_auth_nz( unicode(os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD']) )
@@ -53,36 +56,18 @@ class BorrowDirectTests( unittest.TestCase ):
         """ Tests item availability. """
         data = {
             u'UNIVERSITY_CODE': unicode( os.environ[u'BDPY_TEST__UNIVERSITY_CODE'] ),
-            # u'API_AUTHENTICATION_URL': unicode( os.environ[u'BDPY_TEST__API_AUTHENTICATION_URL'] ),
-            # u'API_AUTHORIZATION_URL': unicode( os.environ[u'BDPY_TEST__API_AUTHORIZATION_URL'] ),
-            u'API_SEARCH_URL': unicode( os.environ[u'BDPY_TEST__API_SEARCH_URL'] ),
+            u'API_URL_ROOT': unicode( os.environ[u'BDPY_TEST__API_URL_ROOT'] ),
             u'API_PARTNERSHIP_ID': unicode( os.environ[u'BDPY_TEST__PARTNERSHIP_ID'] ),
-            u'LOG_PATH': self.LOG_PATH }  # 'LOG_PATH': None  ...outputs to console
+            u'LOG_PATH': self.LOG_PATH }
         bd = BorrowDirect( data )
         patron_barcode = unicode(os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD'])
-        # bd.run_auth_nz( patron_barcode )
-        # bd.search( patron_barcode, u'ISBN', u'9780688002305' )  # Zen & the Art of Motorcycle Maintenance (also #0688002307)
+        result_dct = bd.search( patron_barcode, u'ISBN', u'9780688002305' )  # Zen & the Art of Motorcycle Maintenance (also #0688002307)
         # bd.search( patron_barcode, u'ISBN', u'9780307269706' )
-        bd.search( patron_barcode, u'ISBN', u'0745649890' )
-        self.assertEqual(
-            2, bd.search_result )
-
-    # def test_search(self):
-    #     """ Tests item availability. """
-    #     data = {
-    #         u'UNIVERSITY_CODE': unicode( os.environ[u'BDPY_TEST__UNIVERSITY_CODE'] ),
-    #         u'API_AUTHENTICATION_URL': unicode( os.environ[u'BDPY_TEST__API_AUTHENTICATION_URL'] ),
-    #         u'API_AUTHORIZATION_URL': unicode( os.environ[u'BDPY_TEST__API_AUTHORIZATION_URL'] ),
-    #         u'API_SEARCH_URL': unicode( os.environ[u'BDPY_TEST__API_SEARCH_URL'] ),
-    #         u'API_PARTNERSHIP_ID': unicode( os.environ[u'BDPY_TEST__PARTNERSHIP_ID'] ),
-    #         u'LOG_PATH': self.LOG_PATH }  # 'LOG_PATH': None  ...outputs to console
-    #     bd = BorrowDirect( data )
-    #     patron_barcode = unicode(os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD'])
-    #     bd.run_auth_nz( patron_barcode )
-    #     search_result = bd.search( patron_barcode, u'ISBN', u'9780688002305' )  # Zen & the Art of Motorcycle Maintenance (also #0688002307)
-    #     self.assertEqual(
-    #         [u'AuthorizationId', u'Available', u'PickupLocations', u'RequestLink', u'SearchTerm'], sorted( search_result[u'Item'].keys() )
-    #         )
+        # bd.search( patron_barcode, u'ISBN', u'0745649890' )
+        for key in [u'AuthorizationId', u'Available', u'PickupLocations', u'SearchTerm']:
+            self.assertTrue(
+                key in result_dct[u'Item'].keys() )
+        # NOTE: where is the 'RequestLink' key?
 
     # end class BorrowDirectTests
 
@@ -90,6 +75,7 @@ class BorrowDirectTests( unittest.TestCase ):
 class AuthTests( unittest.TestCase ):
 
     def setUp(self):
+        time.sleep( SLEEP_SECONDS )
         self.LOG_PATH = unicode( os.environ[u'BDPY_TEST__LOG_PATH'] )  # if None  ...outputs to console
         bd = BorrowDirect( {u'LOG_PATH': self.LOG_PATH} )
         self.logger = bd.logger
@@ -100,10 +86,24 @@ class AuthTests( unittest.TestCase ):
         a = Authenticator( self.logger )
         authentication_id = a.authenticate(
             unicode(os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD']),
-            unicode(os.environ[u'BDPY_TEST__API_AUTHENTICATION_URL']),
+            unicode(os.environ[u'BDPY_TEST__API_URL_ROOT']),
             unicode(os.environ[u'BDPY_TEST__UNIVERSITY_CODE']) )
         self.assertEqual(
             27, len(authentication_id) )
+
+    def test_authorize(self):
+        """ Tests authz session-extender. """
+        a = Authenticator( self.logger )
+        authentication_id = a.authenticate(
+            unicode(os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD']),
+            unicode(os.environ[u'BDPY_TEST__API_URL_ROOT']),
+            unicode(os.environ[u'BDPY_TEST__UNIVERSITY_CODE']) )
+        time.sleep( SLEEP_SECONDS )
+        validity = a.authorize(
+            unicode(os.environ[u'BDPY_TEST__API_URL_ROOT']),
+            authentication_id )
+        self.assertEqual(
+            True, validity )
 
     # end class AuthTests
 
