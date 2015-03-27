@@ -19,9 +19,10 @@ class BorrowDirectTests( unittest.TestCase ):
         self.api_url_root = unicode( os.environ[u'BDPY_TEST__API_URL_ROOT'] )
         self.university_code = unicode( os.environ[u'BDPY_TEST__UNIVERSITY_CODE'] )
         self.partnership_id = unicode( os.environ[u'BDPY_TEST__PARTNERSHIP_ID'] )
+        self.pickup_location = unicode(os.environ[u'BDPY_TEST__PICKUP_LOCATION'])
 
     def test_settings_instantiation(self):
-        """ Tests that module instantiation handles settings not-defined, or defined as dict, module, or path. """
+        """ Tests that instance instantiation handles settings not-defined, or defined as dict, module, or path. """
         ## no settings passed on instantiation
         bd = BorrowDirect()  # no settings info
         self.assertEqual(
@@ -47,7 +48,7 @@ class BorrowDirectTests( unittest.TestCase ):
             u'234', bd.UNIVERSITY_CODE )
 
     def test_run_auth_nz(self):
-        """ Tests authN/Z. """
+        """ Tests manager authN/Z. """
         basics = {
             u'UNIVERSITY_CODE': self.university_code, u'API_URL_ROOT': self.api_url_root, u'LOG_PATH': self.LOG_PATH }
         bd = BorrowDirect( basics )
@@ -56,17 +57,30 @@ class BorrowDirectTests( unittest.TestCase ):
             True, bd.authnz_valid )
 
     def test_run_search(self):
-        """ Tests item availability. """
+        """ Tests manager item availability check. """
         basics = {
             u'UNIVERSITY_CODE': self.university_code, u'API_URL_ROOT': self.api_url_root, u'PARTNERSHIP_ID': self.partnership_id, u'LOG_PATH': self.LOG_PATH }
         bd = BorrowDirect( basics )
-        bd.run_search( self.patron_barcode, u'ISBN', u'9780688002305' )  # Zen & the Art of Motorcycle Maintenance (also #0688002307)
-        # bd.run_search( self.patron_barcode, u'ISBN', u'9780307269706' )
-        # bd.run_search( self.patron_barcode, u'ISBN', u'0745649890' )
+        search_value = unicode(os.environ[u'BDPY_TEST__ISBN_BROWN_NO_AND_BD_REQUESTABLE'])
+        bd.run_search( self.patron_barcode, u'ISBN', search_value )
         for key in [u'AuthorizationId', u'Available', u'PickupLocations', u'SearchTerm']:
             self.assertTrue(
                 key in bd.search_result[u'Item'].keys() )
         # NOTE: where is the 'RequestLink' key?
+
+    def test_run_request_item(self):
+        """ Tests manager requesting. """
+        basics = {
+            u'UNIVERSITY_CODE': self.university_code, u'API_URL_ROOT': self.api_url_root, u'PARTNERSHIP_ID': self.partnership_id, u'PICKUP_LOCATION': self.pickup_location, u'LOG_PATH': self.LOG_PATH }
+        bd = BorrowDirect( basics )
+        search_value = unicode(os.environ[u'BDPY_TEST__ISBN_BROWN_NO_AND_BD_REQUESTABLE'])
+        bd.run_request_item( self.patron_barcode, u'ISBN', search_value )
+        self.assertEqual(
+            [u'Request'], bd.request_result.keys() )
+        self.assertEqual(
+            [u'RequestNumber'], bd.request_result[u'Request'].keys() )
+        self.assertEqual(
+            u'BRO-', bd.request_result[u'Request'][u'RequestNumber'][0:4] )
 
     # end class BorrowDirectTests
 
@@ -152,9 +166,11 @@ class RequesterTests( unittest.TestCase ):
         search_value = unicode(os.environ[u'BDPY_TEST__ISBN_BROWN_NO_AND_BD_REQUESTABLE'])
         request_result_dct = r.request_item( search_key, search_value, self.pickup_location, self.api_url_root, self.patron_barcode, self.university_code, self.partnership_id )
         self.assertEqual(
-            2,
-            request_result_dct
-            )
+            [u'Request'], request_result_dct.keys() )
+        self.assertEqual(
+            [u'RequestNumber'], request_result_dct[u'Request'].keys() )
+        self.assertEqual(
+            u'BRO-', request_result_dct[u'Request'][u'RequestNumber'][0:4] )
 
 
 

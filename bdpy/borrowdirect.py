@@ -5,6 +5,7 @@ import requests
 from types import ModuleType, NoneType
 from .auth import Authenticator
 from .search import Searcher
+from .request import Requester
 
 
 class BorrowDirect( object ):
@@ -32,6 +33,7 @@ class BorrowDirect( object ):
         self.AId = None
         self.authnz_valid = None
         self.search_result = None
+        self.request_result = None
 
     def say_hi( self ):
         print u'hello_world'
@@ -56,6 +58,15 @@ class BorrowDirect( object ):
         srchr = Searcher( self.logger )
         self.search_result = srchr.search( patron_barcode, key, value, self.API_URL_ROOT, self.UNIVERSITY_CODE, self.PARTNERSHIP_ID )
         self.logger.info( u'run_search() complete' )
+        return
+
+    def run_request_item( self, patron_barcode, search_key, search_value ):
+        """ Requests an exact key-value.
+            Called manually. """
+        self.logger.debug( u'starting run_request...' )
+        req = Requester( self.logger )
+        self.request_result = req.request_item( search_key, search_value, self.PICKUP_LOCATION, self.API_URL_ROOT, patron_barcode, self.UNIVERSITY_CODE, self.PARTNERSHIP_ID )
+        self.logger.info( u'run_request() complete' )
         return
 
     # end class BorrowDirect
