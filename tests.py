@@ -4,6 +4,7 @@ import exceptions, imp, pprint, os, time, unittest
 from bdpy import BorrowDirect
 from bdpy.auth import Authenticator
 from bdpy.search import Searcher
+from bdpy.request import Requester
 
 
 SLEEP_SECONDS = 2  # test-server is creaky
@@ -140,10 +141,20 @@ class RequesterTests( unittest.TestCase ):
         self.api_url_root = unicode(os.environ[u'BDPY_TEST__API_URL_ROOT'])
         self.university_code = unicode(os.environ[u'BDPY_TEST__UNIVERSITY_CODE'])
         self.partnership_id = unicode(os.environ[u'BDPY_TEST__PARTNERSHIP_ID'])
+        self.pickup_location = unicode(os.environ[u'BDPY_TEST__PICKUP_LOCATION'])
 
-
-
-
+    def test_request_item__brown_no_and_bd_yes(self):
+        """ Tests exact key-value requesting when...
+                - item not held by Brown
+                - item requestable in BorrowDirect web-interface """
+        r = Requester( self.logger )
+        search_key = u'ISBN'
+        search_value = unicode(os.environ[u'BDPY_TEST__ISBN_BROWN_NO_AND_BD_REQUESTABLE'])
+        request_result_dct = r.request_item( search_key, search_value, self.pickup_location, self.api_url_root, self.patron_barcode, self.university_code, self.partnership_id )
+        self.assertEqual(
+            2,
+            request_result_dct
+            )
 
 
 

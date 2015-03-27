@@ -19,6 +19,7 @@ class BorrowDirect( object ):
         self.API_URL_ROOT = None
         self.PARTNERSHIP_ID = None
         self.UNIVERSITY_CODE = None
+        self.PICKUP_LOCATION = None
         self.LOG_PATH = None
         self.LOG_LEVEL = None
         self.logger = None
@@ -84,6 +85,7 @@ class BorrowDirectHelper( object ):
         bd_instance.API_URL_ROOT = None if ( u'API_URL_ROOT' not in dir(settings) ) else settings.API_URL_ROOT
         bd_instance.PARTNERSHIP_ID = None if ( u'PARTNERSHIP_ID' not in dir(settings) ) else settings.PARTNERSHIP_ID
         bd_instance.UNIVERSITY_CODE = None if ( u'UNIVERSITY_CODE' not in dir(settings) ) else settings.UNIVERSITY_CODE
+        bd_instance.PICKUP_LOCATION = None if ( u'PICKUP_LOCATION' not in dir(settings) ) else settings.PICKUP_LOCATION
         bd_instance.LOG_PATH = None if ( u'LOG_PATH' not in dir(settings) ) else settings.LOG_PATH
         bd_instance.LOG_LEVEL = u'DEBUG' if ( u'LOG_LEVEL' not in dir(settings) ) else settings.LOG_LEVEL
         return
