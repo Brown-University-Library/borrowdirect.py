@@ -13,7 +13,7 @@ on this page...
 
 ### installation ###
 
-    $ pip install git+git://github.com/birkin/borrowdirect.py.git@0.5-dev
+    $ pip install git+git://github.com/birkin/borrowdirect.py.git@0.6-dev
 
 - best to install a release version while it's under development, as in the example above; sometimes I check-in code that's not fully working
 
@@ -23,31 +23,34 @@ on this page...
 
 ### common usage ###
 
-(works)
-
 - auth
 
         >>> from bdpy import BorrowDirect
-        >>> defaults = { 'UNIVERSITY_CODE': the_code, 'API_URL': the_url_root }
+        >>> defaults = { 'UNIVERSITY_CODE': the_code, 'API_URL_ROOT': the_url_root }
         >>> bd = BorrowDirect( defaults )
-        >>> bd.run_auth_nz( a_patron_barcode )  # performs authN/Z & stores authentication-id
-        >>> bd.AId  # authoriztion-id
+        >>> bd.run_auth_nz( a_patron_barcode )  # performs authN/Z & stores authorization-id
+        >>> bd.AId  # authorization-id
         u'abc...'
-        >>> bd.bd.authnz_valid
+        >>> bd.authnz_valid
         True
 
 - search
 
         >>> from bdpy import BorrowDirect
-        >>> defaults = { 'UNIVERSITY_CODE': the_code, 'API_URL': the_url_root, 'PARTNERSHIP_ID': the_id }
+        >>> defaults = { 'UNIVERSITY_CODE': the_code, 'API_URL_ROOT': the_url_root, 'PARTNERSHIP_ID': the_id }
         >>> bd = BorrowDirect( defaults )
         >>> bd.run_search( a_patron_barcode, 'ISBN', '9780688002305' )
         >>> sorted( bd.search_results['Item'].keys() )
         [u'AuthorizationId', u'Available', u'PickupLocations', u'SearchTerm']
 
-(todo)
+- request
 
-    >>> bd.run_request( a_patron_barcode, 'ISBN', '9780688002305' )  # output TBD
+        >>> from bdpy import BorrowDirect
+        >>> defaults = { 'UNIVERSITY_CODE': the_code, 'API_URL_ROOT': the_url_root, 'PARTNERSHIP_ID': the_id, 'PICKUP_LOCATION': the_location }
+        >>> bd = BorrowDirect( defaults )
+        >>> bd.run_request_item( a_patron_barcode, 'ISBN', '9780688002305' )
+        >>> bd.request_result
+        {u'Request': {u'RequestNumber': u'BRO-12345678'}}
 
 
 
