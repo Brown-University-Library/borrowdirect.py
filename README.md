@@ -20,11 +20,11 @@ on this page...
 - for now:
 
         $ pip install requests
-        $ pip install git+git://github.com/birkin/borrowdirect.py.git@0.4-dev
+        $ pip install git+git://github.com/birkin/borrowdirect.py.git@0.5-dev
 
 - best to install a release version while it's under development; sometimes I check-in code that's not fully working
 
-- one dependency: the awesome [requests](http://docs.python-requests.org/en/latest/) module, which is automatically pip-installed if necessary in the 0.5-dev and later releases
+- one dependency: the awesome [requests](http://docs.python-requests.org/en/latest/) module, which is automatically pip-installed if necessary
 
 
 
@@ -48,7 +48,7 @@ on this page...
         >>> from bdpy import BorrowDirect
         >>> defaults = { 'UNIVERSITY_CODE': the_code, 'API_URL': the_url_root, 'API_PARTNERSHIP_ID': the_id }
         >>> bd = BorrowDirect( defaults )
-        >>> bd.run_search( a_patron_barcode, u'ISBN', u'9780688002305' )
+        >>> bd.run_search( a_patron_barcode, 'ISBN', '9780688002305' )
         >>> sorted( bd.search_results['Item'].keys() )
         [u'AuthorizationId', u'Available', u'PickupLocations', u'SearchTerm']
 
@@ -61,7 +61,7 @@ on this page...
 ### notes ###
 
 - BorrowDirect() instantiation is flexible
-    - you can pass in a settings-module, or a settings-module-path, or nothing (but then set the class-attributes directly)
+    - you can pass in a dict, a settings-module, a settings-module-path, or nothing (but then set the class-attributes directly)
 
 - BorrowDirect api [documentation](http://borrowdirect.pbworks.com/w/page/83351110/Web%20Services%20Documentation) (requires login)
 
