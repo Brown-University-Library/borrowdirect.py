@@ -18,7 +18,7 @@ class Requester( object ):
         """ Searches for exact key-value.
             Called by BorrowDirect.run_search() """
         assert search_key in self.valid_search_keys
-        authorization_id = self.get_authorization_id( patron_barcode )
+        authorization_id = self.get_authorization_id( patron_barcode, api_url_root, university_code )
         params = self.build_params( partnership_id, authorization_id, pickup_location, search_key, search_value )
         url = u'%s/dws/item/add' % api_url_root
         headers = { u'Content-type': u'application/json' }
@@ -34,7 +34,7 @@ class Requester( object ):
             Called by request_item()
             Note that only the authenticator webservice is called;
               the authorization webservice simply extends the same id's session time and so is not needed here. """
-        athr = Authenticator()
+        authr = Authenticator( self.logger )
         authorization_id = authr.authenticate(
             patron_barcode, api_url_root, university_code )
         return authorization_id
