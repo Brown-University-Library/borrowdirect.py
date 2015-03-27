@@ -129,6 +129,23 @@ class SearcherTests( unittest.TestCase ):
     # end class SearcherTests
 
 
+class RequesterTests( unittest.TestCase ):
+
+    def setUp(self):
+        time.sleep( SLEEP_SECONDS )
+        self.LOG_PATH = unicode( os.environ[u'BDPY_TEST__LOG_PATH'] )  # if None  ...outputs to console
+        bd = BorrowDirect( {u'LOG_PATH': self.LOG_PATH} )
+        self.logger = bd.logger
+        self.patron_barcode = unicode(os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD'])
+        self.api_url_root = unicode(os.environ[u'BDPY_TEST__API_URL_ROOT'])
+        self.university_code = unicode(os.environ[u'BDPY_TEST__UNIVERSITY_CODE'])
+        self.partnership_id = unicode(os.environ[u'BDPY_TEST__PARTNERSHIP_ID'])
+
+
+
+
+
+
 
 
 if __name__ == "__main__":
