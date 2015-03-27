@@ -1,10 +1,6 @@
 ### about ###
 
-'bdpy' faciliates programmatic access to [BorrowDirect](http://www.borrowdirect.org), an academic book-borrowing consortium.
-
-_under development_
-
-_( formatted in [markdown](http://daringfireball.net/projects/markdown/) )_
+'bdpy' -- _under development_ -- faciliates programmatic access to [BorrowDirect](http://www.borrowdirect.org), an academic book-borrowing consortium.
 
 on this page...
 
@@ -17,12 +13,9 @@ on this page...
 
 ### installation ###
 
-- for now:
+    $ pip install git+git://github.com/birkin/borrowdirect.py.git@0.5-dev
 
-        $ pip install requests
-        $ pip install git+git://github.com/birkin/borrowdirect.py.git@0.5-dev
-
-- best to install a release version while it's under development; sometimes I check-in code that's not fully working
+- best to install a release version while it's under development, as in the example above; sometimes I check-in code that's not fully working
 
 - one dependency: the awesome [requests](http://docs.python-requests.org/en/latest/) module, which is automatically pip-installed if necessary
 
@@ -54,14 +47,13 @@ on this page...
 
 (todo)
 
-    >>> bd.request( the_isbn )  # output TBD
+    >>> bd.run_request( a_patron_barcode, 'ISBN', '9780688002305' )  # output TBD
 
 
 
 ### notes ###
 
-- BorrowDirect() instantiation is flexible
-    - you can pass in a dict, a settings-module, a settings-module-path, or nothing (but then set the class-attributes directly)
+- BorrowDirect() instantiation is flexible: you can pass in a dict, a settings-module, a settings-module-path, or nothing (but then set the class-attributes directly)
 
 - BorrowDirect api [documentation](http://borrowdirect.pbworks.com/w/page/83351110/Web%20Services%20Documentation) (requires login)
 
@@ -93,6 +85,6 @@ The [MIT License](http://opensource.org/licenses/MIT) (MIT)
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 
-
-
 ---
+
+_( formatted in [markdown](http://daringfireball.net/projects/markdown/) )_
