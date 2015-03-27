@@ -1,6 +1,6 @@
 ### about ###
 
-'bdpy' -- _under development_ -- faciliates programmatic access to [BorrowDirect](http://www.borrowdirect.org), an academic book-borrowing consortium.
+'bdpy' -- _under development_ -- faciliates programmatic access to the api to [BorrowDirect](http://www.borrowdirect.org), an academic book-borrowing consortium.
 
 on this page...
 
@@ -34,7 +34,7 @@ on this page...
         >>> bd.authnz_valid
         True
 
-- search
+- or search
 
         >>> from bdpy import BorrowDirect
         >>> defaults = { 'UNIVERSITY_CODE': the_code, 'API_URL_ROOT': the_url_root, 'PARTNERSHIP_ID': the_id }
@@ -43,7 +43,7 @@ on this page...
         >>> sorted( bd.search_results['Item'].keys() )
         [u'AuthorizationId', u'Available', u'PickupLocations', u'SearchTerm']
 
-- request
+- or request
 
         >>> from bdpy import BorrowDirect
         >>> defaults = { 'UNIVERSITY_CODE': the_code, 'API_URL_ROOT': the_url_root, 'PARTNERSHIP_ID': the_id, 'PICKUP_LOCATION': the_location }
@@ -61,6 +61,8 @@ on this page...
 - BorrowDirect api [documentation](http://borrowdirect.pbworks.com/w/page/83351110/Web%20Services%20Documentation) (requires login)
 
 - bdpy code contact: birkin_diana@brown.edu
+
+- ruby [borrowdirect-api wrapper](https://github.com/team-umlaut/umlaut_borrow_direct)
 
 
 
