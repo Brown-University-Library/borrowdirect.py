@@ -39,7 +39,7 @@ on this page...
 - search
 
         >>> from bdpy import BorrowDirect
-        >>> defaults = { 'UNIVERSITY_CODE': the_code, 'API_URL': the_url_root, 'API_PARTNERSHIP_ID': the_id }
+        >>> defaults = { 'UNIVERSITY_CODE': the_code, 'API_URL': the_url_root, 'PARTNERSHIP_ID': the_id }
         >>> bd = BorrowDirect( defaults )
         >>> bd.run_search( a_patron_barcode, 'ISBN', '9780688002305' )
         >>> sorted( bd.search_results['Item'].keys() )

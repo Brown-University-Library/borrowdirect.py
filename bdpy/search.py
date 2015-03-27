@@ -13,11 +13,11 @@ class Searcher( object ):
         self.logger = logger
         self.valid_search_keys = [ u'ISBN', u'ISSN', u'LCCN', u'OCLC', u'PHRASE' ]
 
-    def search( self, patron_barcode, search_key, search_value, api_url_root, university_code, api_partnership_id ):
+    def search( self, patron_barcode, search_key, search_value, api_url_root, university_code, partnership_id ):
         """ Searches for exact key-value.
             Called by BorrowDirect.run_search() """
         assert search_key in self.valid_search_keys
-        params = self.build_params( api_partnership_id, university_code, patron_barcode, search_key, search_value )
+        params = self.build_params( partnership_id, university_code, patron_barcode, search_key, search_value )
         url = u'%s/dws/item/available' % api_url_root
         headers = { u'Content-type': u'application/json' }
         r = requests.post( url, data=json.dumps(params), headers=headers )
@@ -27,11 +27,11 @@ class Searcher( object ):
         self.logger.debug( u'result_dct, `%s`' % pprint.pformat(result_dct) )
         return result_dct
 
-    def build_params( self, api_partnership_id, university_code, patron_barcode, search_key, search_value ):
+    def build_params( self, partnership_id, university_code, patron_barcode, search_key, search_value ):
         """ Builds search json.
             Called by search() """
         params = {
-            u'PartnershipId': api_partnership_id,
+            u'PartnershipId': partnership_id,
             # u'AuthorizationId': self.AId,
             u'Credentials': {
                 u'LibrarySymbol': university_code,

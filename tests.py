@@ -17,7 +17,7 @@ class BorrowDirectTests( unittest.TestCase ):
         self.patron_barcode = unicode( os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD'] )
         self.api_url_root = unicode( os.environ[u'BDPY_TEST__API_URL_ROOT'] )
         self.university_code = unicode( os.environ[u'BDPY_TEST__UNIVERSITY_CODE'] )
-        self.api_partnership_id = unicode( os.environ[u'BDPY_TEST__PARTNERSHIP_ID'] )
+        self.partnership_id = unicode( os.environ[u'BDPY_TEST__PARTNERSHIP_ID'] )
 
     def test_settings_instantiation(self):
         """ Tests that module instantiation handles settings not-defined, or defined as dict, module, or path. """
@@ -57,7 +57,7 @@ class BorrowDirectTests( unittest.TestCase ):
     def test_run_search(self):
         """ Tests item availability. """
         basics = {
-            u'UNIVERSITY_CODE': self.university_code, u'API_URL_ROOT': self.api_url_root, u'API_PARTNERSHIP_ID': self.api_partnership_id, u'LOG_PATH': self.LOG_PATH }
+            u'UNIVERSITY_CODE': self.university_code, u'API_URL_ROOT': self.api_url_root, u'PARTNERSHIP_ID': self.partnership_id, u'LOG_PATH': self.LOG_PATH }
         bd = BorrowDirect( basics )
         bd.run_search( self.patron_barcode, u'ISBN', u'9780688002305' )  # Zen & the Art of Motorcycle Maintenance (also #0688002307)
         # bd.run_search( self.patron_barcode, u'ISBN', u'9780307269706' )
@@ -113,14 +113,14 @@ class SearcherTests( unittest.TestCase ):
         self.patron_barcode = unicode(os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD'])
         self.api_url_root = unicode(os.environ[u'BDPY_TEST__API_URL_ROOT'])
         self.university_code = unicode(os.environ[u'BDPY_TEST__UNIVERSITY_CODE'])
-        self.api_partnership_id = unicode(os.environ[u'BDPY_TEST__PARTNERSHIP_ID'])
+        self.partnership_id = unicode(os.environ[u'BDPY_TEST__PARTNERSHIP_ID'])
 
     def test_search(self):
         """ Tests basic key-value search. """
         s = Searcher( self.logger )
         ( search_key, search_value ) = ( u'ISBN', u'9780688002305' )  # Zen & the Art of Motorcycle Maintenance (also #0688002307)
         result_dct = s.search(
-            self.patron_barcode, search_key, search_value, self.api_url_root, self.university_code, self.api_partnership_id )
+            self.patron_barcode, search_key, search_value, self.api_url_root, self.university_code, self.partnership_id )
         for key in [u'AuthorizationId', u'Available', u'PickupLocations', u'SearchTerm']:
             self.assertTrue(
                 key in result_dct[u'Item'].keys() )

@@ -17,7 +17,7 @@ class BorrowDirect( object ):
             or a dictionary to be passed in. """
         ## general initialization
         self.API_URL_ROOT = None
-        self.API_PARTNERSHIP_ID = None
+        self.PARTNERSHIP_ID = None
         self.UNIVERSITY_CODE = None
         self.LOG_PATH = None
         self.LOG_LEVEL = None
@@ -53,7 +53,7 @@ class BorrowDirect( object ):
             Called manually. """
         self.logger.debug( u'starting run_search...' )
         srchr = Searcher( self.logger )
-        self.search_result = srchr.search( patron_barcode, key, value, self.API_URL_ROOT, self.UNIVERSITY_CODE, self.API_PARTNERSHIP_ID )
+        self.search_result = srchr.search( patron_barcode, key, value, self.API_URL_ROOT, self.UNIVERSITY_CODE, self.PARTNERSHIP_ID )
         self.logger.info( u'run_search() complete' )
         return
 
@@ -82,7 +82,7 @@ class BorrowDirectHelper( object ):
         """ Sets main properties.
             Called by BorrowDirect.__init__() """
         bd_instance.API_URL_ROOT = None if ( u'API_URL_ROOT' not in dir(settings) ) else settings.API_URL_ROOT
-        bd_instance.API_PARTNERSHIP_ID = None if ( u'API_PARTNERSHIP_ID' not in dir(settings) ) else settings.API_PARTNERSHIP_ID
+        bd_instance.PARTNERSHIP_ID = None if ( u'PARTNERSHIP_ID' not in dir(settings) ) else settings.PARTNERSHIP_ID
         bd_instance.UNIVERSITY_CODE = None if ( u'UNIVERSITY_CODE' not in dir(settings) ) else settings.UNIVERSITY_CODE
         bd_instance.LOG_PATH = None if ( u'LOG_PATH' not in dir(settings) ) else settings.LOG_PATH
         bd_instance.LOG_LEVEL = u'DEBUG' if ( u'LOG_LEVEL' not in dir(settings) ) else settings.LOG_LEVEL
