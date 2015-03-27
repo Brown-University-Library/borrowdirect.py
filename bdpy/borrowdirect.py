@@ -4,6 +4,7 @@ import imp, json, logging, pprint, time
 import requests
 from types import ModuleType, NoneType
 from .auth import Authenticator
+from .search import Searcher
 
 
 class BorrowDirect( object ):
@@ -37,42 +38,24 @@ class BorrowDirect( object ):
     def run_auth_nz( self, patron_barcode ):
         """ Runs authN/Z and stores authentication-id.
             Called manually. """
-        self.logger.debug( u'starting auth-nz...' )
+        self.logger.debug( u'starting run_auth_nz()...' )
         authr = Authenticator( self.logger )
         self.AId = authr.authenticate(
             patron_barcode, self.API_URL_ROOT, self.UNIVERSITY_CODE )
         time.sleep( 1 )
         self.authnz_valid = authr.authorize(
             self.API_URL_ROOT, self.AId )
-        self.logger.info( u'auth-nz complete' )
+        self.logger.info( u'run_auth_nz() complete' )
         return
 
-    def search( self, patron_barcode, key, value ):
+    def run_search( self, patron_barcode, key, value ):
         """ Searches for exact key-value.
             Called manually. """
-        assert key in [ u'ISBN', u'ISSN', u'LCCN', u'OCLC', u'PHRASE' ]
-        params = {
-            u'PartnershipId': self.API_PARTNERSHIP_ID,
-            # u'AuthorizationId': self.AId,
-            u'Credentials': {
-                u'LibrarySymbol': self.UNIVERSITY_CODE,
-                u'Barcode': patron_barcode
-                },
-            u'ExactSearch': [ {
-                u'Type': key,
-                u'Value': value
-                } ]
-            }
-        self.logger.debug( u'params, `%s`' % pprint.pformat(params) )
-        url = u'%s/dws/item/available' % self.API_URL_ROOT
-        self.logger.debug( u'url, `%s`' % url )
-        headers = { u'Content-type': u'application/json' }
-        r = requests.post( url, data=json.dumps(params), headers=headers )
-        self.logger.debug( u'search r.content, `%s`' % r.content.decode(u'utf-8') )
-        self.logger.debug( u'search r.url, `%s`' % r.url )
-        dct = r.json()
-        self.logger.debug( u'search dct, `%s`' % pprint.pformat(dct) )
-        return dct
+        self.logger.debug( u'starting run_search...' )
+        srchr = Searcher( self.logger )
+        self.search_result = srchr.search( patron_barcode, key, value, self.API_URL_ROOT, self.UNIVERSITY_CODE, self.API_PARTNERSHIP_ID )
+        self.logger.info( u'run_search() complete' )
+        return
 
     # end class BorrowDirect
 

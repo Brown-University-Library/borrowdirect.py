@@ -5,7 +5,9 @@ import requests
 
 
 class Authenticator( object ):
-    """ Implements authentication & authorization.
+    """ Enables easy calls to the BorrowDirect authN/Z webservices.
+        BorrowDirect 'Authentication Web Service' docs: <http://borrowdirect.pbworks.com/w/page/90132761/Authentication%20Web%20Service> (login required)
+        BorrowDirect 'Authorization Web Service' docs: <http://borrowdirect.pbworks.com/w/page/90132884/Authorization%20Web%20Service> (login required)
         Called by BorrowDirect.run_auth_nz() """
 
     def __init__( self, logger ):

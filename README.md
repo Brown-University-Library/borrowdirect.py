@@ -48,8 +48,8 @@ on this page...
         >>> from bdpy import BorrowDirect
         >>> defaults = { 'UNIVERSITY_CODE': the_code, 'API_URL': the_url_root, 'API_PARTNERSHIP_ID': the_id }
         >>> bd = BorrowDirect( defaults )
-        >>> result_dct = bd.search( a_patron_barcode, u'ISBN', u'9780688002305' )
-        >>> sorted( result_dct['Item'].keys() )
+        >>> bd.run_search( a_patron_barcode, u'ISBN', u'9780688002305' )
+        >>> sorted( bd.search_results['Item'].keys() )
         [u'AuthorizationId', u'Available', u'PickupLocations', u'SearchTerm']
 
 (todo)
@@ -63,7 +63,9 @@ on this page...
 - BorrowDirect() instantiation is flexible
     - you can pass in a settings-module, or a settings-module-path, or nothing (but then set the class-attributes directly)
 
-- contact: birkin_diana@brown.edu
+- BorrowDirect api [documentation](http://borrowdirect.pbworks.com/w/page/83351110/Web%20Services%20Documentation) (requires login)
+
+- bdpy code contact: birkin_diana@brown.edu
 
 
 
