@@ -8,7 +8,7 @@ from .auth import Authenticator
 class Requester( object ):
     """ Enables easy calls to the BorrowDirect request webservice.
         BorrowDirect 'RequestItem Web Service' docs: <http://borrowdirect.pbworks.com/w/page/90133541/RequestItem%20Web%20Service> (login required)
-        Called by BorrowDirect.run_request() """
+        Called by BorrowDirect.run_request_item() """
 
     def __init__( self, logger ):
         self.logger = logger

@@ -32,7 +32,6 @@ class Authenticator( object ):
         """ Checks authorization and extends authentication session time.
             Called by BorrowDirect.run_auth_nz() """
         url = u'%s/portal-service/user/authz/isAuthorized?aid=%s' % ( api_url, authentication_id )
-        # url = u'%s?aid=%s' % ( authentication_url, authentication_id )
         r = requests.get( url )
         dct = r.json()
         state = dct[u'AuthorizationResult'][u'AuthorizationState'][u'State']  # boolean
