@@ -13,9 +13,9 @@ on this page...
 
 ### installation ###
 
-    $ pip install git+git://github.com/birkin/borrowdirect.py.git@0.6-dev
+    $ pip install git+git://github.com/Brown-University-Library/borrowdirect.py@0.6-dev
 
-- best to install a release version while it's under development, as in the example above; sometimes I check-in code that's not fully working
+- best to install a release version while it's under development, as in the example above; occasionally I check-in code that's not fully tested
 
 - one dependency: the awesome [requests](http://docs.python-requests.org/en/latest/) module, which is automatically pip-installed if necessary
 
