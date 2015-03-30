@@ -7,7 +7,7 @@ import requests
 class Searcher( object ):
     """ Enables easy calls to the BorrowDirect search webservice.
         BorrowDirect 'FindIt Web Service' docs: <http://borrowdirect.pbworks.com/w/page/90132998/FindItem%20Web%20Service> (login required)
-        Called by BorrowDirect.run_auth_nz() """
+        Called by BorrowDirect.run_search() """
 
     def __init__( self, logger ):
         self.logger = logger
@@ -34,13 +34,9 @@ class Searcher( object ):
             u'PartnershipId': partnership_id,
             # u'AuthorizationId': self.AId,
             u'Credentials': {
-                u'LibrarySymbol': university_code,
-                u'Barcode': patron_barcode
-                },
+                u'LibrarySymbol': university_code, u'Barcode': patron_barcode },
             u'ExactSearch': [ {
-                u'Type': search_key,
-                u'Value': search_value
-                } ]
+                u'Type': search_key, u'Value': search_value } ]
             }
         self.logger.debug( u'params, `%s`' % pprint.pformat(params) )
         return params

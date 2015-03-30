@@ -35,9 +35,6 @@ class BorrowDirect( object ):
         self.search_result = None
         self.request_result = None
 
-    def say_hi( self ):
-        print u'hello_world'
-
     def run_auth_nz( self, patron_barcode ):
         """ Runs authN/Z and stores authentication-id.
             Called manually. """
