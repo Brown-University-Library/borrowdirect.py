@@ -62,7 +62,7 @@ on this page...
 
 - bdpy code contact: birkin_diana@brown.edu
 
-- ruby [borrowdirect-api wrapper](https://github.com/team-umlaut/umlaut_borrow_direct)
+- ruby [borrowdirect-api wrapper](https://github.com/jrochkind/borrow_direct)
 
 
 
