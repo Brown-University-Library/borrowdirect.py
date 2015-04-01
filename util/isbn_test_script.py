@@ -1,5 +1,5 @@
 """
-Tests a list of ISBNs.
+Tests a json-file list of ISBNs.
 
 - Load ISBNs
 - confirm redis is running
@@ -8,6 +8,9 @@ Tests a list of ISBNs.
 each job:
 - hit bdpy test-server search, store result to redis
 - hit bdpy test-server request, store result to redis
+
+Assumes bdpy has already been pip-installed, as per the main README.md
+Assumes redis and rq have already been pip-installed
 """
 
 import json, os
@@ -52,10 +55,11 @@ class EnqueueIsbnTestJobs( object ):
         """ Enqueues jobs.
             Called by enqueue_isbn_test_jobs() """
         for isbn in unique_isbns:
-            q.enqueue_call(
-                func=u'bdpy.utils.run_isbn_test',
-                kwargs={ u'isbn': isbn },
-                timeout=600 )  # 10 minutes
+            # q.enqueue_call(
+            #     func=u'bdpy.utils.run_isbn_test',
+            #     kwargs={ u'isbn': isbn },
+            #     timeout=600 )  # 10 minutes
+            print isbn
         return
 
     # end class EnqueueIsbnTestJobs
