@@ -55,11 +55,10 @@ class EnqueueIsbnTestJobs( object ):
         """ Enqueues jobs.
             Called by enqueue_isbn_test_jobs() """
         for isbn in unique_isbns:
-            # q.enqueue_call(
-            #     func=u'bdpy.utils.run_isbn_test',
-            #     kwargs={ u'isbn': isbn },
-            #     timeout=600 )  # 10 minutes
-            print isbn
+            q.enqueue_call(
+                func=u'bdpy.utils.run_perform_test',
+                kwargs={ u'isbn': isbn },
+                timeout=600 )  # 10 minutes
         return
 
     # end class EnqueueIsbnTestJobs
@@ -69,13 +68,37 @@ class IsbnTest( object ):
     """ Hits bd-api test-server with a search, and then a request, and stores output in redis for later review. """
 
     def __init__( self ):
-        pass
+        self.search_defaults = {
+            u'UNIVERSITY_CODE': unicode( os.environ[u'BDPY_TEST__UNIVERSITY_CODE'] ),
+            u'API_URL_ROOT': unicode( os.environ[u'BDPY_TEST__API_URL_ROOT'] ),
+            u'PARTNERSHIP_ID': unicode( os.environ[u'BDPY_TEST__PARTNERSHIP_ID'] ) }
+        self.request_defaults = {
+            u'UNIVERSITY_CODE': unicode( os.environ[u'BDPY_TEST__UNIVERSITY_CODE'] ),
+            u'API_URL_ROOT': unicode( os.environ[u'BDPY_TEST__API_URL_ROOT'] ),
+            u'PARTNERSHIP_ID': unicode( os.environ[u'BDPY_TEST__PARTNERSHIP_ID'] ),
+            u'PICKUP_LOCATION': unicode( os.environ[u'BDPY_TEST__PICKUP_LOCATION'] ) }
+        self.patron_barcode = unicode( os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD'] )
+        self.search_result = None
+        self.request_item_result = None
 
-    def do_search( self ):
-        pass
+    def do_search( self, isbn ):
+        time.sleep( 2 )
+        bd = BorrowDirect( self.search_defaults )
+        bd.run_search( self.patron_barcode, u'ISBN', isbn )
+        self.search_result = bd.search_result
+        return
 
-    def do_request( self ):
-        pass
+    def do_request( self, isbn ):
+        time.sleep( 2 )
+        bd = BorrowDirect( self.request_defaults )
+        bd.run_request_item( self.patron_barcode, u'ISBN', isbn )
+        self.request_item_result = bd.request_item_result
+        return
+
+    def store_results( self ):
+
+
+
 
     # end class IsbnTest
 
@@ -92,7 +115,8 @@ def run_enqueue_isbn_test_jobs():
 def run_perform_test( isbn ):
     """ Calls perform_test()
         Called manually. """
-    it = IsbnTest( isbn )
-    it.do_search()
-    it.do_request()
+    it = IsbnTest()
+    it.do_search( isbn )
+    it.do_request( isbn )
+    it.store_results()
     return
