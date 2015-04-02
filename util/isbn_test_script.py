@@ -26,9 +26,9 @@ class EnqueueIsbnTestJobs( object ):
         self.QUEUE_NAME = u'BD_ISBN_TEST'
         self.HASH_KEY = u'BD_ISBN_TEST'
         self.r = redis.StrictRedis( host=u'localhost', port=6379, db=0 )
-        self.q = rq.Queue( QUEUE_NAME, connection=redis.Redis() )
+        self.q = rq.Queue( self.QUEUE_NAME, connection=self.r )
         assert len( self.r.keys() ) > -1  # if redis isn't running this will generate an error
-        assert self.r.get( HASH_KEY ) == None  # ensures key isn't being used
+        assert self.r.get( self.HASH_KEY ) == None  # ensures key isn't being used
 
     def enqueue_isbn_test_jobs( self ):
         """ Calls functions to enqueue jobs.
@@ -40,12 +40,12 @@ class EnqueueIsbnTestJobs( object ):
     def load_isbns( self ):
         """ Loads isbns from a json file.
             Called by enqueue_isbn_test_jobs() """
-        with open( ISBN_JSON ) as f:
+        with open( self.ISBN_JSON ) as f:
             utf8_txt = f.read()
             isbns = json.loads( utf8_txt )
         isbns = sorted( isbns )
         print u'- num_isbns is `%s`' % len( isbns )
-        isbns_set = set( mylist )
+        isbns_set = set( isbns )
         unique_isbns = list( isbns_set )
         unique_isbns = sorted( unique_isbns )
         print u'- num_unique_isbns is `%s`' % len( unique_isbns )
