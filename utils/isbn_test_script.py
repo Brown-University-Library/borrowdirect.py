@@ -1,19 +1,19 @@
 """
 Tests a json-file list of ISBNs.
 
-- Load ISBNs
-- confirm redis is running
-- enqueue the jobs
+- Loads ISBNs
+- confirms redis is running
+- enqueues the jobs
 
 each job:
-- hit bdpy test-server search, store result to redis
-- hit bdpy test-server request, store result to redis
+- hits bdpy test-server search, stores result to redis
+- hits bdpy test-server request, stores result to redis
 
 Assumes bdpy has already been pip-installed, as per the main README.md
 Assumes redis and rq have already been pip-installed
 """
 
-import json, os
+import datetime, json, os
 import redis, rq
 
 
@@ -55,7 +55,7 @@ class EnqueueIsbnTestJobs( object ):
         """ Enqueues jobs.
             Called by enqueue_isbn_test_jobs() """
         for isbn in unique_isbns:
-            q.enqueue_call(
+            self.q.enqueue_call(
                 func=u'bdpy.utils.run_perform_test',
                 kwargs={ u'isbn': isbn },
                 timeout=600 )  # 10 minutes
@@ -68,6 +68,7 @@ class IsbnTest( object ):
     """ Hits bd-api test-server with a search, and then a request, and stores output in redis for later review. """
 
     def __init__( self ):
+        self.HASH_KEY = u'BD_ISBN_TEST'
         self.search_defaults = {
             u'UNIVERSITY_CODE': unicode( os.environ[u'BDPY_TEST__UNIVERSITY_CODE'] ),
             u'API_URL_ROOT': unicode( os.environ[u'BDPY_TEST__API_URL_ROOT'] ),
@@ -78,27 +79,47 @@ class IsbnTest( object ):
             u'PARTNERSHIP_ID': unicode( os.environ[u'BDPY_TEST__PARTNERSHIP_ID'] ),
             u'PICKUP_LOCATION': unicode( os.environ[u'BDPY_TEST__PICKUP_LOCATION'] ) }
         self.patron_barcode = unicode( os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD'] )
-        self.search_result = None
-        self.request_item_result = None
+
 
     def do_search( self, isbn ):
+        """ Performs bd-api search; stores result.
+            Called by run_perform_test() """
         time.sleep( 2 )
         bd = BorrowDirect( self.search_defaults )
+        start = datetime.datetime.now()
         bd.run_search( self.patron_barcode, u'ISBN', isbn )
-        self.search_result = bd.search_result
+        end = datetime.datetime.now()
+        time_taken = unicode( end-start )
+        dct = { u'search_result': {
+            u'result': bd.search_result, u'time_taken': time_taken} }
+        self.store_results( isbn, dct )
         return
 
     def do_request( self, isbn ):
+        """ Performs bd-api request on test-server; stores result.
+            Called by run_perform_test() """
         time.sleep( 2 )
         bd = BorrowDirect( self.request_defaults )
+        start = datetime.datetime.now()
         bd.run_request_item( self.patron_barcode, u'ISBN', isbn )
-        self.request_item_result = bd.request_item_result
+        end = datetime.datetime.now()
+        time_taken = unicode( end-start )
+        dct = { u'request_item_result': {
+            u'result': bd.request_item_result, u'time_taken': time_taken} }
+        self.store_results( isbn, dct )
         return
 
-    def store_results( self ):
-
-
-
+    def store_results( self, isbn, dct ):
+        """ Stores results to redis.
+            Called by do_search() and do_request() """
+        rds = redis.StrictRedis( host=u'localhost', port=6379, db=0 )
+        if dct.keys()[0] == u'search_result':
+            rds.hset( self.HASH_KEY, isbn, dct )
+        elif dct.keys()[0] == u'request_item_result':
+            search_result = rds.hget( self.HASH_KEY, isbn )[u'search_result']
+            full_dct = { u'search_result': search_result, u'request_item_result': dct[u'request_item_result'] }
+            rds.hset( self.HASH_KEY, isbn, full_dct )
+        return
 
     # end class IsbnTest
 
@@ -118,5 +139,4 @@ def run_perform_test( isbn ):
     it = IsbnTest()
     it.do_search( isbn )
     it.do_request( isbn )
-    it.store_results()
     return
