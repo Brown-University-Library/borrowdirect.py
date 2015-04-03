@@ -13,8 +13,9 @@ Assumes bdpy has already been pip-installed, as per the main README.md
 Assumes redis and rq have already been pip-installed
 """
 
-import datetime, json, os
+import datetime, json, os, time
 import redis, rq
+from bdpy import BorrowDirect
 
 
 class EnqueueIsbnTestJobs( object ):
@@ -53,10 +54,11 @@ class EnqueueIsbnTestJobs( object ):
 
     def enqueue( self, unique_isbns ):
         """ Enqueues jobs.
-            Called by enqueue_isbn_test_jobs() """
+            Called by enqueue_isbn_test_jobs()
+            Assumes rq worker is started at ../utils """
         for isbn in unique_isbns:
             self.q.enqueue_call(
-                func=u'bdpy.utils.run_perform_test',
+                func=u'utils.isbn_test_script.run_perform_test',
                 kwargs={ u'isbn': isbn },
                 timeout=600 )  # 10 minutes
         return
@@ -104,8 +106,8 @@ class IsbnTest( object ):
         bd.run_request_item( self.patron_barcode, u'ISBN', isbn )
         end = datetime.datetime.now()
         time_taken = unicode( end-start )
-        dct = { u'request_item_result': {
-            u'result': bd.request_item_result, u'time_taken': time_taken} }
+        dct = { u'request_result': {
+            u'result': bd.request_result, u'time_taken': time_taken} }
         self.store_results( isbn, dct )
         return
 
@@ -114,11 +116,11 @@ class IsbnTest( object ):
             Called by do_search() and do_request() """
         rds = redis.StrictRedis( host=u'localhost', port=6379, db=0 )
         if dct.keys()[0] == u'search_result':
-            rds.hset( self.HASH_KEY, isbn, dct )
-        elif dct.keys()[0] == u'request_item_result':
-            search_result = rds.hget( self.HASH_KEY, isbn )[u'search_result']
-            full_dct = { u'search_result': search_result, u'request_item_result': dct[u'request_item_result'] }
-            rds.hset( self.HASH_KEY, isbn, full_dct )
+            rds.hset( self.HASH_KEY, isbn, json.dumps(dct) )
+        elif dct.keys()[0] == u'request_result':
+            search_result = json.loads( rds.hget(self.HASH_KEY, isbn) )[u'search_result']
+            full_dct = { u'search_result': search_result, u'request_result': dct[u'request_result'] }
+            rds.hset( self.HASH_KEY, isbn, json.dumps(full_dct) )
         return
 
     # end class IsbnTest
