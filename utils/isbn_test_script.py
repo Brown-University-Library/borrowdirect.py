@@ -81,7 +81,8 @@ class IsbnTest( object ):
             u'PARTNERSHIP_ID': unicode( os.environ[u'BDPY_TEST__PARTNERSHIP_ID'] ),
             u'PICKUP_LOCATION': unicode( os.environ[u'BDPY_TEST__PICKUP_LOCATION'] ) }
         self.patron_barcode = unicode( os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD'] )
-
+        self.output_file_path = os.environ[u'BD_ISBN_TEST__OUTPUT_JSON_PATH']
+        self.rds = redis.StrictRedis( host=u'localhost', port=6379, db=0 )
 
     def do_search( self, isbn ):
         """ Performs bd-api search; stores result.
@@ -114,13 +115,25 @@ class IsbnTest( object ):
     def store_results( self, isbn, dct ):
         """ Stores results to redis.
             Called by do_search() and do_request() """
-        rds = redis.StrictRedis( host=u'localhost', port=6379, db=0 )
         if dct.keys()[0] == u'search_result':
-            rds.hset( self.HASH_KEY, isbn, json.dumps(dct) )
+            self.rds.hset( self.HASH_KEY, isbn, json.dumps(dct) )
         elif dct.keys()[0] == u'request_result':
-            search_result = json.loads( rds.hget(self.HASH_KEY, isbn) )[u'search_result']
+            search_result = json.loads( self.rds.hget(self.HASH_KEY, isbn) )[u'search_result']
             full_dct = { u'search_result': search_result, u'request_result': dct[u'request_result'] }
-            rds.hset( self.HASH_KEY, isbn, json.dumps(full_dct) )
+            self.rds.hset( self.HASH_KEY, isbn, json.dumps(full_dct) )
+        return
+
+    def output_file( self ):
+        """ Outputs redis data to json file.
+            Called by run_output_file() """
+        new_dct = {}
+        dct = self.rds.hgetall( self.HASH_KEY )
+        for ( key, val ) in dct.items():
+            jdct = json.loads( val )
+            new_dct[key] = jdct
+        jsn = json.dumps( new_dct, sort_keys=True, indent=2 )
+        with open( self.output_file_path, u'w' ) as f:
+            f.write( jsn )
         return
 
     # end class IsbnTest
@@ -141,4 +154,11 @@ def run_perform_test( isbn ):
     it = IsbnTest()
     it.do_search( isbn )
     it.do_request( isbn )
+    return
+
+def run_output_file():
+    """ Outputs redis data to json file.
+        Called manually. """
+    it = IsbnTest()
+    it.output_file()
     return
