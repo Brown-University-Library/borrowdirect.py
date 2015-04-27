@@ -11,6 +11,11 @@ each job:
 
 Assumes bdpy has already been pip-installed, as per the main README.md
 Assumes redis and rq have already been pip-installed
+Assumes current working directory is bdpy_code
+
+To run...
+>>> from utils import isbn_test_script
+>>> isbn_test_script.run_enqueue_isbn_test_jobs()
 """
 
 import datetime, json, os, time
