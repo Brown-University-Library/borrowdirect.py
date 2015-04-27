@@ -9,13 +9,19 @@ each job:
 - hits bdpy test-server search, stores result to redis
 - hits bdpy test-server request, stores result to redis
 
-Assumes bdpy has already been pip-installed, as per the main README.md
-Assumes redis and rq have already been pip-installed
-Assumes current working directory is bdpy_code
+- Finally, an output script can be run to gather all the output from redis into a single json file.
+
+Assumptions...
+- bdpy has already been pip-installed, as per the main README.md
+- redis and rq have already been pip-installed
+- current working directory is bdpy_code
 
 To run...
 >>> from utils import isbn_test_script
 >>> isbn_test_script.run_enqueue_isbn_test_jobs()
+
+When jobs are done...
+>>> isbn_test_script.run_output_file()
 """
 
 import datetime, json, os, time
@@ -37,7 +43,7 @@ class EnqueueIsbnTestJobs( object ):
         assert self.r.get( self.HASH_KEY ) == None  # ensures key isn't being used
 
     def enqueue_isbn_test_jobs( self ):
-        """ Calls functions to enqueue jobs.
+        """ Calls functions to load isbns & enqueue jobs.
             Called by run_enqueue_isbn_test_jobs() """
         unique_isbns = self.load_isbns()
         self.enqueue( unique_isbns )
@@ -155,7 +161,7 @@ def run_enqueue_isbn_test_jobs():
 
 def run_perform_test( isbn ):
     """ Calls perform_test()
-        Called manually. """
+        Called by EnqueueIsbnTestJobs.enqueue() """
     it = IsbnTest()
     it.do_search( isbn )
     it.do_request( isbn )
