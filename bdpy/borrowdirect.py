@@ -11,7 +11,7 @@ from .request import Requester
 class BorrowDirect( object ):
     """ Manages high-level function calls. """
 
-    def __init__( self, settings=None ):
+    def __init__( self, settings=None, logger=None ):
         """
         - Allows a settings module to be passed in,
             or a settings path to be passed in,
@@ -28,12 +28,37 @@ class BorrowDirect( object ):
         bdh = BorrowDirectHelper()
         normalized_settings = bdh.normalize_settings( settings )
         bdh.update_properties( self, normalized_settings )
-        bdh.setup_log( self )
+        bdh.setup_log( self, logger )
+        # bdh.setup_log( self )
         ## updated by workflow
         self.AId = None
         self.authnz_valid = None
         self.search_result = None
         self.request_result = None
+
+    # def __init__( self, settings=None ):
+    #     """
+    #     - Allows a settings module to be passed in,
+    #         or a settings path to be passed in,
+    #         or a dictionary to be passed in. """
+    #     ## general initialization
+    #     self.API_URL_ROOT = None
+    #     self.PARTNERSHIP_ID = None
+    #     self.UNIVERSITY_CODE = None
+    #     self.PICKUP_LOCATION = None
+    #     self.LOG_PATH = None
+    #     self.LOG_LEVEL = None
+    #     self.logger = None
+    #     ## setup
+    #     bdh = BorrowDirectHelper()
+    #     normalized_settings = bdh.normalize_settings( settings )
+    #     bdh.update_properties( self, normalized_settings )
+    #     bdh.setup_log( self )
+    #     ## updated by workflow
+    #     self.AId = None
+    #     self.authnz_valid = None
+    #     self.search_result = None
+    #     self.request_result = None
 
     def run_auth_nz( self, patron_barcode ):
         """ Runs authN/Z and stores authentication-id.
@@ -101,13 +126,28 @@ class BorrowDirectHelper( object ):
     def setup_log( self, bd_instance ):
         """ Configures log path and level.
             Called by BorrowDirect.__init__() """
-        log_level = {
-            u'DEBUG': logging.DEBUG,
-            u'INFO': logging.INFO, }
-        logging.basicConfig(
-            filename=bd_instance.LOG_PATH, level=log_level[bd_instance.LOG_LEVEL],
-            format='dt %(asctime)s | ln %(lineno)d | md %(module)s | fn %(funcName)s | %(message)s' )
-        bd_instance.logger = logging.getLogger(__name__)
+        if logger:
+            bd_instance.logger = logger
+        else:
+            log_level = {
+                u'DEBUG': logging.DEBUG,
+                u'INFO': logging.INFO, }
+            logging.basicConfig(
+                filename=bd_instance.LOG_PATH, level=log_level[bd_instance.LOG_LEVEL],
+                format='dt %(asctime)s | ln %(lineno)d | md %(module)s | fn %(funcName)s | %(message)s' )
+            bd_instance.logger = logging.getLogger(__name__)
         return
+
+    # def setup_log( self, bd_instance ):
+    #     """ Configures log path and level.
+    #         Called by BorrowDirect.__init__() """
+    #     log_level = {
+    #         u'DEBUG': logging.DEBUG,
+    #         u'INFO': logging.INFO, }
+    #     logging.basicConfig(
+    #         filename=bd_instance.LOG_PATH, level=log_level[bd_instance.LOG_LEVEL],
+    #         format='dt %(asctime)s | ln %(lineno)d | md %(module)s | fn %(funcName)s | %(message)s' )
+    #     bd_instance.logger = logging.getLogger(__name__)
+    #     return
 
     # end class BorrowDirectHelper
