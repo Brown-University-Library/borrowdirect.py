@@ -13,7 +13,7 @@ search_defaults = {
     u'PARTNERSHIP_ID': unicode( os.environ[u'BDPY_TEST__PARTNERSHIP_ID'] )
     }
 bd = BorrowDirect( search_defaults )
-patron_barcode = unicode( os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD'] )
+patron_barcode = unicode( os.environ[u'BDPY_TEST__PATRON_BARCODE'] )
 bd.run_search( patron_barcode, u'ISBN', u'9780688002305' )
 print u'search_result...'; pprint.pprint( bd.search_result )
 
@@ -31,6 +31,6 @@ request_defaults = {
     u'PICKUP_LOCATION': unicode( os.environ[u'BDPY_TEST__PICKUP_LOCATION'] )
     }
 bd = BorrowDirect( request_defaults )
-patron_barcode = unicode( os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD'] )
+patron_barcode = unicode( os.environ[u'BDPY_TEST__PATRON_BARCODE'] )
 bd.run_request_item( patron_barcode, u'ISBN', u'9780688002305' )
 print u'request_result...'; pprint.pprint( bd.request_result )

@@ -91,7 +91,7 @@ class IsbnTest( object ):
             u'API_URL_ROOT': unicode( os.environ[u'BDPY_TEST__API_URL_ROOT'] ),
             u'PARTNERSHIP_ID': unicode( os.environ[u'BDPY_TEST__PARTNERSHIP_ID'] ),
             u'PICKUP_LOCATION': unicode( os.environ[u'BDPY_TEST__PICKUP_LOCATION'] ) }
-        self.patron_barcode = unicode( os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD'] )
+        self.patron_barcode = unicode( os.environ[u'BDPY_TEST__PATRON_BARCODE'] )
         self.output_file_path = os.environ[u'BD_ISBN_TEST__OUTPUT_JSON_PATH']
         self.rds = redis.StrictRedis( host=u'localhost', port=6379, db=0 )
 
