@@ -23,18 +23,7 @@ on this page...
 
 ### common usage ###
 
-- auth
-
-        >>> from bdpy import BorrowDirect
-        >>> defaults = { 'UNIVERSITY_CODE': the_code, 'API_URL_ROOT': the_url_root }
-        >>> bd = BorrowDirect( defaults )
-        >>> bd.run_auth_nz( a_patron_barcode )  # performs authN/Z & stores authorization-id
-        >>> bd.AId  # authorization-id
-        u'abc...'
-        >>> bd.authnz_valid
-        True
-
-- or search
+- search:
 
         >>> from bdpy import BorrowDirect
         >>> defaults = { 'UNIVERSITY_CODE': the_code, 'API_URL_ROOT': the_url_root, 'PARTNERSHIP_ID': the_id }
@@ -43,7 +32,7 @@ on this page...
         >>> sorted( bd.search_results['Item'].keys() )
         [u'AuthorizationId', u'Available', u'PickupLocations', u'SearchTerm']
 
-- or request
+- or request:
 
         >>> from bdpy import BorrowDirect
         >>> defaults = { 'UNIVERSITY_CODE': the_code, 'API_URL_ROOT': the_url_root, 'PARTNERSHIP_ID': the_id, 'PICKUP_LOCATION': the_location }
@@ -57,6 +46,17 @@ on this page...
 ### notes ###
 
 - BorrowDirect() instantiation is flexible: you can pass in a dict, a settings-module, a settings-module-path, or nothing (but then set the class-attributes directly)
+
+- no need to call the auth wrapper explicitly -- the calls to search and request do it automatically -- but you could if you wanted to:
+
+        >>> from bdpy import BorrowDirect
+        >>> defaults = { 'UNIVERSITY_CODE': the_code, 'API_URL_ROOT': the_url_root }
+        >>> bd = BorrowDirect( defaults )
+        >>> bd.run_auth_nz( a_patron_barcode )  # performs authN/Z & stores authorization-id
+        >>> bd.AId  # authorization-id
+        u'abc...'
+        >>> bd.authnz_valid
+        True
 
 - BorrowDirect api [documentation](http://borrowdirect.pbworks.com/w/page/83351110/Web%20Services%20Documentation) (requires login)
 

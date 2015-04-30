@@ -15,7 +15,7 @@ class BorrowDirectTests( unittest.TestCase ):
     def setUp(self):
         self.LOG_PATH = unicode( os.environ[u'BDPY_TEST__LOG_PATH'] )  # if None  ...outputs to console
         time.sleep( SLEEP_SECONDS )
-        self.patron_barcode = unicode( os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD'] )
+        self.patron_barcode = unicode( os.environ[u'BDPY_TEST__PATRON_BARCODE'] )
         self.api_url_root = unicode( os.environ[u'BDPY_TEST__API_URL_ROOT'] )
         self.university_code = unicode( os.environ[u'BDPY_TEST__UNIVERSITY_CODE'] )
         self.partnership_id = unicode( os.environ[u'BDPY_TEST__PARTNERSHIP_ID'] )
@@ -92,7 +92,7 @@ class AuthenticatorTests( unittest.TestCase ):
         self.LOG_PATH = unicode( os.environ[u'BDPY_TEST__LOG_PATH'] )  # if None  ...outputs to console
         bd = BorrowDirect( {u'LOG_PATH': self.LOG_PATH} )
         self.logger = bd.logger
-        self.patron_barcode = unicode(os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD'])
+        self.patron_barcode = unicode(os.environ[u'BDPY_TEST__PATRON_BARCODE'])
         self.api_url_root = unicode(os.environ[u'BDPY_TEST__API_URL_ROOT'])
         self.university_code = unicode(os.environ[u'BDPY_TEST__UNIVERSITY_CODE'])
 
@@ -125,7 +125,7 @@ class SearcherTests( unittest.TestCase ):
         self.LOG_PATH = unicode( os.environ[u'BDPY_TEST__LOG_PATH'] )  # if None  ...outputs to console
         bd = BorrowDirect( {u'LOG_PATH': self.LOG_PATH} )
         self.logger = bd.logger
-        self.patron_barcode = unicode(os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD'])
+        self.patron_barcode = unicode(os.environ[u'BDPY_TEST__PATRON_BARCODE'])
         self.api_url_root = unicode(os.environ[u'BDPY_TEST__API_URL_ROOT'])
         self.university_code = unicode(os.environ[u'BDPY_TEST__UNIVERSITY_CODE'])
         self.partnership_id = unicode(os.environ[u'BDPY_TEST__PARTNERSHIP_ID'])
@@ -151,7 +151,7 @@ class RequesterTests( unittest.TestCase ):
         self.LOG_PATH = unicode( os.environ[u'BDPY_TEST__LOG_PATH'] )  # if None  ...outputs to console
         bd = BorrowDirect( {u'LOG_PATH': self.LOG_PATH} )
         self.logger = bd.logger
-        self.patron_barcode = unicode(os.environ[u'BDPY_TEST__PATRON_BARCODE_GOOD'])
+        self.patron_barcode = unicode(os.environ[u'BDPY_TEST__PATRON_BARCODE'])
         self.api_url_root = unicode(os.environ[u'BDPY_TEST__API_URL_ROOT'])
         self.university_code = unicode(os.environ[u'BDPY_TEST__UNIVERSITY_CODE'])
         self.partnership_id = unicode(os.environ[u'BDPY_TEST__PARTNERSHIP_ID'])

@@ -16,15 +16,15 @@ class Requester( object ):
 
     def request_item( self, search_key, search_value, pickup_location, api_url_root, patron_barcode, university_code, partnership_id ):
         """ Searches for exact key-value.
-            Called by BorrowDirect.run_search() """
+            Called by BorrowDirect.run_request_item() """
         assert search_key in self.valid_search_keys
         authorization_id = self.get_authorization_id( patron_barcode, api_url_root, university_code )
         params = self.build_params( partnership_id, authorization_id, pickup_location, search_key, search_value )
         url = u'%s/dws/item/add' % api_url_root
         headers = { u'Content-type': u'application/json' }
         r = requests.post( url, data=json.dumps(params), headers=headers )
-        self.logger.debug( u'search r.url, `%s`' % r.url )
-        self.logger.debug( u'search r.content, `%s`' % r.content.decode(u'utf-8') )
+        self.logger.debug( u'request r.url, `%s`' % r.url )
+        self.logger.debug( u'request r.content, `%s`' % r.content.decode(u'utf-8') )
         result_dct = r.json()
         self.logger.debug( u'result_dct, `%s`' % pprint.pformat(result_dct) )
         return result_dct
@@ -40,7 +40,7 @@ class Requester( object ):
         return authorization_id
 
     def build_params( self, partnership_id, authorization_id, pickup_location, search_key, search_value ):
-        """ Builds search json.
+        """ Builds request json.
             Called by request_item() """
         params = {
             u'PartnershipId': partnership_id,
