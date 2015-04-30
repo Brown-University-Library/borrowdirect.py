@@ -123,7 +123,7 @@ class BorrowDirectHelper( object ):
         bd_instance.LOG_LEVEL = u'DEBUG' if ( u'LOG_LEVEL' not in dir(settings) ) else settings.LOG_LEVEL
         return
 
-    def setup_log( self, bd_instance ):
+    def setup_log( self, bd_instance, logger ):
         """ Configures log path and level.
             Called by BorrowDirect.__init__() """
         if logger:
