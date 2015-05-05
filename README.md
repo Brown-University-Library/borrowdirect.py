@@ -13,7 +13,7 @@ on this page...
 
 ### installation ###
 
-    $ pip install git+git://github.com/Brown-University-Library/borrowdirect.py@0.7-dev
+    $ pip install git+https://github.com/Brown-University-Library/borrowdirect.py@0.7-dev
 
 - best to install a release version while it's under development, as in the example above; occasionally I check-in code that's not fully tested
 
