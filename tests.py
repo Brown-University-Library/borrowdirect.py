@@ -172,6 +172,13 @@ class RequesterTests( unittest.TestCase ):
         self.assertEqual(
             u'BRO-', request_result_dct[u'Request'][u'RequestNumber'][0:4] )
 
+    def test_build_params( self ):
+        """ Tests for all expected params. """
+        r = Requester( self.logger )
+        ( partnership_id, authorization_id, pickup_location, search_key, search_value ) = ( u'a', u'b', u'c', u'd', u'e' )
+        params = r.build_params( partnership_id, authorization_id, pickup_location, search_key, search_value )
+        self.assertEqual( [u'AuthorizationId', u'ExactSearch', u'Notes', u'PartnershipId', u'PickupLocation'], sorted(params.keys()) )
+
 
 
 

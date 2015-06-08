@@ -45,6 +45,7 @@ class Requester( object ):
         params = {
             u'PartnershipId': partnership_id,
             u'AuthorizationId': authorization_id,
+            u'PickupLocation': pickup_location,
             u'Notes': u'',
             u'ExactSearch': [ {
                 u'Type': search_key,
