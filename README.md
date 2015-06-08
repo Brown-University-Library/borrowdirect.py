@@ -1,6 +1,6 @@
 ### about ###
 
-'bdpy' -- _under development_ -- faciliates programmatic access to the api to [BorrowDirect](http://www.borrowdirect.org), an academic book-borrowing consortium.
+'bdpy' faciliates programmatic access to the API to [BorrowDirect](http://www.borrowdirect.org), an academic book-borrowing consortium.
 
 on this page...
 
@@ -13,9 +13,9 @@ on this page...
 
 ### installation ###
 
-    $ pip install git+https://github.com/Brown-University-Library/borrowdirect.py@0.7-dev
+    $ pip install git+https://github.com/Brown-University-Library/borrowdirect.py@0.8-dev
 
-- best to install a release version while it's under development, as in the example above; occasionally I check-in code that's not fully tested
+- best to install a 'release' version, as in the example above, though all code in the master branch can be expected to be stable.
 
 - one dependency: the awesome [requests](http://docs.python-requests.org/en/latest/) module, which is automatically pip-installed if necessary
 
@@ -45,7 +45,7 @@ on this page...
 
 ### notes ###
 
-- BorrowDirect() instantiation is flexible: you can pass in a dict, a settings-module, a settings-module-path, or nothing (but then set the class-attributes directly)
+- BorrowDirect() instantiation is flexible: you can pass in a dict, a settings-module, a settings-module-path, or nothing (but then set the instance-attributes directly)
 
 - no need to call the auth wrapper explicitly -- the calls to search and request do it automatically -- but you could if you wanted to:
 
