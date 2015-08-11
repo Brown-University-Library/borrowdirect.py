@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
+
 import json, pprint
 import requests
 from .auth import Authenticator
@@ -12,7 +14,7 @@ class Requester( object ):
 
     def __init__( self, logger ):
         self.logger = logger
-        self.valid_search_keys = [ u'ISBN', u'ISSN', u'LCCN', u'OCLC', u'PHRASE' ]
+        self.valid_search_keys = [ 'ISBN', 'ISSN', 'LCCN', 'OCLC', 'PHRASE' ]
 
     def request_item( self, search_key, search_value, pickup_location, api_url_root, patron_barcode, university_code, partnership_id ):
         """ Searches for exact key-value.
@@ -20,13 +22,13 @@ class Requester( object ):
         assert search_key in self.valid_search_keys
         authorization_id = self.get_authorization_id( patron_barcode, api_url_root, university_code )
         params = self.build_params( partnership_id, authorization_id, pickup_location, search_key, search_value )
-        url = u'%s/dws/item/add' % api_url_root
-        headers = { u'Content-type': u'application/json' }
+        url = '%s/dws/item/add' % api_url_root
+        headers = { 'Content-type': 'application/json' }
         r = requests.post( url, data=json.dumps(params), headers=headers )
-        self.logger.debug( u'request r.url, `%s`' % r.url )
-        self.logger.debug( u'request r.content, `%s`' % r.content.decode(u'utf-8') )
+        self.logger.debug( 'request r.url, `%s`' % r.url )
+        self.logger.debug( 'request r.content, `%s`' % r.content.decode('utf-8') )
         result_dct = r.json()
-        self.logger.debug( u'result_dct, `%s`' % pprint.pformat(result_dct) )
+        self.logger.debug( 'result_dct, `%s`' % pprint.pformat(result_dct) )
         return result_dct
 
     def get_authorization_id( self, patron_barcode, api_url_root, university_code ):
@@ -43,16 +45,16 @@ class Requester( object ):
         """ Builds request json.
             Called by request_item() """
         params = {
-            u'PartnershipId': partnership_id,
-            u'AuthorizationId': authorization_id,
-            u'PickupLocation': pickup_location,
-            u'Notes': u'',
-            u'ExactSearch': [ {
-                u'Type': search_key,
-                u'Value': search_value
+            'PartnershipId': partnership_id,
+            'AuthorizationId': authorization_id,
+            'PickupLocation': pickup_location,
+            'Notes': '',
+            'ExactSearch': [ {
+                'Type': search_key,
+                'Value': search_value
                 } ]
             }
-        self.logger.debug( u'params, `%s`' % pprint.pformat(params) )
+        self.logger.debug( 'params, `%s`' % pprint.pformat(params) )
         return params
 
     # end class Requester

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
+
 import imp, json, logging, pprint, time
 import requests
 from types import ModuleType, NoneType
@@ -36,59 +38,35 @@ class BorrowDirect( object ):
         self.search_result = None
         self.request_result = None
 
-    # def __init__( self, settings=None ):
-    #     """
-    #     - Allows a settings module to be passed in,
-    #         or a settings path to be passed in,
-    #         or a dictionary to be passed in. """
-    #     ## general initialization
-    #     self.API_URL_ROOT = None
-    #     self.PARTNERSHIP_ID = None
-    #     self.UNIVERSITY_CODE = None
-    #     self.PICKUP_LOCATION = None
-    #     self.LOG_PATH = None
-    #     self.LOG_LEVEL = None
-    #     self.logger = None
-    #     ## setup
-    #     bdh = BorrowDirectHelper()
-    #     normalized_settings = bdh.normalize_settings( settings )
-    #     bdh.update_properties( self, normalized_settings )
-    #     bdh.setup_log( self )
-    #     ## updated by workflow
-    #     self.AId = None
-    #     self.authnz_valid = None
-    #     self.search_result = None
-    #     self.request_result = None
-
     def run_auth_nz( self, patron_barcode ):
         """ Runs authN/Z and stores authentication-id.
             Called manually. """
-        self.logger.debug( u'starting run_auth_nz()...' )
+        self.logger.debug( 'starting run_auth_nz()...' )
         authr = Authenticator( self.logger )
         self.AId = authr.authenticate(
             patron_barcode, self.API_URL_ROOT, self.UNIVERSITY_CODE )
         time.sleep( 1 )
         self.authnz_valid = authr.authorize(
             self.API_URL_ROOT, self.AId )
-        self.logger.info( u'run_auth_nz() complete' )
+        self.logger.info( 'run_auth_nz() complete' )
         return
 
     def run_search( self, patron_barcode, key, value ):
         """ Searches for exact key-value.
             Called manually. """
-        self.logger.debug( u'starting run_search...' )
+        self.logger.debug( 'starting run_search...' )
         srchr = Searcher( self.logger )
         self.search_result = srchr.search( patron_barcode, key, value, self.API_URL_ROOT, self.UNIVERSITY_CODE, self.PARTNERSHIP_ID )
-        self.logger.info( u'run_search() complete' )
+        self.logger.info( 'run_search() complete' )
         return
 
     def run_request_item( self, patron_barcode, search_key, search_value ):
         """ Requests an exact key-value.
             Called manually. """
-        self.logger.debug( u'starting run_request...' )
+        self.logger.debug( 'starting run_request...' )
         req = Requester( self.logger )
         self.request_result = req.request_item( search_key, search_value, self.PICKUP_LOCATION, self.API_URL_ROOT, patron_barcode, self.UNIVERSITY_CODE, self.PARTNERSHIP_ID )
-        self.logger.info( u'run_request() complete' )
+        self.logger.info( 'run_request() complete' )
         return
 
     # end class BorrowDirect
@@ -102,25 +80,25 @@ class BorrowDirectHelper( object ):
         """ Returns a settings module regardless whether settings are passed in as a module or dict or settings-path.
             Called by BorrowDirect.__init__() """
         types = [ NoneType, dict, ModuleType, unicode ]
-        assert type(settings) in types, Exception( u'Passing in settings is optional, but if used, must be either a dict, a unicode path to a settings module, or a module named settings; current type is: %s' % repr(type(settings)) )
+        assert type(settings) in types, Exception( 'Passing in settings is optional, but if used, must be either a dict, a unicode path to a settings module, or a module named settings; current type is: %s' % repr(type(settings)) )
         if isinstance(settings, dict):
-          s = imp.new_module( u'settings' )
+          s = imp.new_module( 'settings' )
           for k, v in settings.items():
             setattr( s, k, v )
           settings = s
         elif isinstance( settings, unicode ):  # path
-          settings = imp.load_source( u'*', settings )
+          settings = imp.load_source( '*', settings )
         return settings
 
     def update_properties( self, bd_instance, settings ):
         """ Sets main properties.
             Called by BorrowDirect.__init__() """
-        bd_instance.API_URL_ROOT = None if ( u'API_URL_ROOT' not in dir(settings) ) else settings.API_URL_ROOT
-        bd_instance.PARTNERSHIP_ID = None if ( u'PARTNERSHIP_ID' not in dir(settings) ) else settings.PARTNERSHIP_ID
-        bd_instance.UNIVERSITY_CODE = None if ( u'UNIVERSITY_CODE' not in dir(settings) ) else settings.UNIVERSITY_CODE
-        bd_instance.PICKUP_LOCATION = None if ( u'PICKUP_LOCATION' not in dir(settings) ) else settings.PICKUP_LOCATION
-        bd_instance.LOG_PATH = None if ( u'LOG_PATH' not in dir(settings) ) else settings.LOG_PATH
-        bd_instance.LOG_LEVEL = u'DEBUG' if ( u'LOG_LEVEL' not in dir(settings) ) else settings.LOG_LEVEL
+        bd_instance.API_URL_ROOT = None if ( 'API_URL_ROOT' not in dir(settings) ) else settings.API_URL_ROOT
+        bd_instance.PARTNERSHIP_ID = None if ( 'PARTNERSHIP_ID' not in dir(settings) ) else settings.PARTNERSHIP_ID
+        bd_instance.UNIVERSITY_CODE = None if ( 'UNIVERSITY_CODE' not in dir(settings) ) else settings.UNIVERSITY_CODE
+        bd_instance.PICKUP_LOCATION = None if ( 'PICKUP_LOCATION' not in dir(settings) ) else settings.PICKUP_LOCATION
+        bd_instance.LOG_PATH = None if ( 'LOG_PATH' not in dir(settings) ) else settings.LOG_PATH
+        bd_instance.LOG_LEVEL = 'DEBUG' if ( 'LOG_LEVEL' not in dir(settings) ) else settings.LOG_LEVEL
         return
 
     def setup_log( self, bd_instance, logger ):
@@ -130,24 +108,12 @@ class BorrowDirectHelper( object ):
             bd_instance.logger = logger
         else:
             log_level = {
-                u'DEBUG': logging.DEBUG,
-                u'INFO': logging.INFO, }
+                'DEBUG': logging.DEBUG,
+                'INFO': logging.INFO, }
             logging.basicConfig(
                 filename=bd_instance.LOG_PATH, level=log_level[bd_instance.LOG_LEVEL],
                 format='dt %(asctime)s | ln %(lineno)d | md %(module)s | fn %(funcName)s | %(message)s' )
             bd_instance.logger = logging.getLogger(__name__)
         return
-
-    # def setup_log( self, bd_instance ):
-    #     """ Configures log path and level.
-    #         Called by BorrowDirect.__init__() """
-    #     log_level = {
-    #         u'DEBUG': logging.DEBUG,
-    #         u'INFO': logging.INFO, }
-    #     logging.basicConfig(
-    #         filename=bd_instance.LOG_PATH, level=log_level[bd_instance.LOG_LEVEL],
-    #         format='dt %(asctime)s | ln %(lineno)d | md %(module)s | fn %(funcName)s | %(message)s' )
-    #     bd_instance.logger = logging.getLogger(__name__)
-    #     return
 
     # end class BorrowDirectHelper
