@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='bdpy',
-    version='0.10dev',
+    version='0.9b',
     packages=find_packages(),
-    install_requires=[ 'requests==2.8.1' ],
+    install_requires=[ 'requests==2.7.0' ],
 )
