@@ -15,19 +15,19 @@ class Authenticator( object ):
     def __init__( self, logger ):
         self.logger = logger
 
-    def authenticate( self, patron_barcode, api_url, university_code ):
+    def authenticate( self, patron_barcode, api_url, api_key, university_code, partnership_id ):
         """ Accesses and returns authentication-id for storage.
-            Called by BorrowDirect.run_auth_nz() """
-        d = {
-            'AuthenticationInformation': {
-            'LibrarySymbol': university_code,
-            'PatronId': patron_barcode } }
+            Called by BorrowDirect.run_auth_nz(), Searcher.get_authorization_id(), and Requester.get_authorization_id() """
+        url = '%s/portal-service/user/authentication' % api_url
         headers = { 'Content-type': 'application/json', 'Accept': 'text/plain'}
-        url = '%s/portal-service/user/authentication/patron' % api_url
-        r = requests.post( url, data=json.dumps(d), headers=headers )
-        dct = r.json()
-        authentication_id = dct['Authentication']['AuthnUserInfo']['AId']
-        self.logger.debug( 'authentication_id, `%s`' % authentication_id )
+        params = {
+            'ApiKey': api_key,
+            'UserGroup': 'patron',
+            'LibrarySymbol': university_code,
+            'PartnershipId': partnership_id,
+            'PatronId': patron_barcode }
+        r = requests.post( url, data=json.dumps(params), headers=headers )
+        authentication_id = r.json()['AuthorizationId']
         return authentication_id
 
     def authorize( self, api_url, authentication_id ):
@@ -36,9 +36,8 @@ class Authenticator( object ):
         url = '%s/portal-service/user/authz/isAuthorized?aid=%s' % ( api_url, authentication_id )
         r = requests.get( url )
         dct = r.json()
-        state = dct['AuthorizationResult']['AuthorizationState']['State']  # boolean
+        state = dct['AuthorizationState']['State']  # boolean
         assert type( state ) == bool
-        self.logger.debug( 'state, `%s`' % state )
         return state
 
     # end class Authenticator

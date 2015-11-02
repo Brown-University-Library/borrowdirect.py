@@ -20,6 +20,7 @@ class BorrowDirect( object ):
             or a dictionary to be passed in. """
         ## general initialization
         self.API_URL_ROOT = None
+        self.API_KEY = None
         self.PARTNERSHIP_ID = None
         self.UNIVERSITY_CODE = None
         self.PICKUP_LOCATION = None
@@ -31,7 +32,6 @@ class BorrowDirect( object ):
         normalized_settings = bdh.normalize_settings( settings )
         bdh.update_properties( self, normalized_settings )
         bdh.setup_log( self, logger )
-        # bdh.setup_log( self )
         ## updated by workflow
         self.AId = None
         self.authnz_valid = None
@@ -40,30 +40,32 @@ class BorrowDirect( object ):
 
     def run_auth_nz( self, patron_barcode ):
         """ Runs authN/Z and stores authentication-id.
-            Called manually. """
+            Can be called manually, but likely no need to, since run_search() and run_request_item() handle auth automatically. """
         self.logger.debug( 'starting run_auth_nz()...' )
         authr = Authenticator( self.logger )
         self.AId = authr.authenticate(
             patron_barcode, self.API_URL_ROOT, self.UNIVERSITY_CODE )
+        self.AId = authr.authenticate(
+            patron_barcode, self.API_URL_ROOT, self.API_KEY, self.UNIVERSITY_CODE, self.PARTNERSHIP_ID )
         time.sleep( 1 )
         self.authnz_valid = authr.authorize(
             self.API_URL_ROOT, self.AId )
         self.logger.info( 'run_auth_nz() complete' )
         return
 
-    def run_search( self, patron_barcode, key, value ):
+    def run_search( self, patron_barcode, search_key, search_value ):
         """ Searches for exact key-value.
             Called manually. """
-        self.logger.debug( 'starting run_search...' )
+        self.logger.debug( 'starting run_search()...' )
         srchr = Searcher( self.logger )
-        self.search_result = srchr.search( patron_barcode, key, value, self.API_URL_ROOT, self.UNIVERSITY_CODE, self.PARTNERSHIP_ID )
+        self.search_result = srchr.search( patron_barcode, search_key, search_value, self.API_URL_ROOT, self.API_KEY, self.UNIVERSITY_CODE, self.PARTNERSHIP_ID )
         self.logger.info( 'run_search() complete' )
         return
 
     def run_request_item( self, patron_barcode, search_key, search_value ):
         """ Requests an exact key-value.
             Called manually. """
-        self.logger.debug( 'starting run_request...' )
+        self.logger.debug( 'starting run_request()...' )
         req = Requester( self.logger )
         self.request_result = req.request_item( search_key, search_value, self.PICKUP_LOCATION, self.API_URL_ROOT, patron_barcode, self.UNIVERSITY_CODE, self.PARTNERSHIP_ID )
         self.logger.info( 'run_request() complete' )
@@ -94,6 +96,7 @@ class BorrowDirectHelper( object ):
         """ Sets main properties.
             Called by BorrowDirect.__init__() """
         bd_instance.API_URL_ROOT = None if ( 'API_URL_ROOT' not in dir(settings) ) else settings.API_URL_ROOT
+        bd_instance.API_KEY = None if ( 'API_KEY' not in dir(settings) ) else settings.API_KEY
         bd_instance.PARTNERSHIP_ID = None if ( 'PARTNERSHIP_ID' not in dir(settings) ) else settings.PARTNERSHIP_ID
         bd_instance.UNIVERSITY_CODE = None if ( 'UNIVERSITY_CODE' not in dir(settings) ) else settings.UNIVERSITY_CODE
         bd_instance.PICKUP_LOCATION = None if ( 'PICKUP_LOCATION' not in dir(settings) ) else settings.PICKUP_LOCATION
@@ -108,11 +111,11 @@ class BorrowDirectHelper( object ):
             bd_instance.logger = logger
         else:
             log_level = {
-                'DEBUG': logging.DEBUG,
-                'INFO': logging.INFO, }
+                'DEBUG': logging.DEBUG, 'INFO': logging.INFO, }
             logging.basicConfig(
                 filename=bd_instance.LOG_PATH, level=log_level[bd_instance.LOG_LEVEL],
-                format='dt %(asctime)s | ln %(lineno)d | md %(module)s | fn %(funcName)s | %(message)s' )
+                format='[%(asctime)s] %(levelname)s [%(module)s-%(funcName)s()::%(lineno)d] %(message)s',
+                datefmt='%d/%b/%Y %H:%M:%S' )
             bd_instance.logger = logging.getLogger(__name__)
         return
 
