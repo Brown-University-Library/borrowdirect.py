@@ -9,7 +9,7 @@ from bdpy.search import Searcher
 from bdpy.request import Requester
 
 
-SLEEP_SECONDS = 2  # being nice
+SLEEP_SECONDS = 2  # test-server is creaky
 
 
 class BorrowDirectTests( unittest.TestCase ):
@@ -71,8 +71,7 @@ class BorrowDirectTests( unittest.TestCase ):
         # NOTE: where is the 'RequestLink' key?
 
     # def test_run_request_item(self):
-    #     """ Tests manager requesting.
-    #         Commented out because it'll really request the item. """
+    #     """ Tests manager requesting. """
     #     basics = {
     #         'UNIVERSITY_CODE': self.university_code, 'API_URL_ROOT': self.api_url_root, 'PARTNERSHIP_ID': self.partnership_id, 'PICKUP_LOCATION': self.pickup_location, 'LOG_PATH': self.LOG_PATH }
     #     bd = BorrowDirect( basics )
@@ -95,17 +94,15 @@ class AuthenticatorTests( unittest.TestCase ):
         self.LOG_PATH = unicode( os.environ['BDPY_TEST__LOG_PATH'] )  # if None  ...outputs to console
         bd = BorrowDirect( {'LOG_PATH': self.LOG_PATH} )
         self.logger = bd.logger
-        self.patron_barcode = unicode( os.environ['BDPY_TEST__PATRON_BARCODE'] )
-        self.api_url_root = unicode( os.environ['BDPY_TEST__API_URL_ROOT'] )
-        self.api_key = unicode( os.environ['BDPY_TEST__API_KEY'] )
-        self.university_code = unicode( os.environ['BDPY_TEST__UNIVERSITY_CODE'] )
-        self.partnership_id = unicode( os.environ['BDPY_TEST__PARTNERSHIP_ID'] )
+        self.patron_barcode = unicode(os.environ['BDPY_TEST__PATRON_BARCODE'])
+        self.api_url_root = unicode(os.environ['BDPY_TEST__API_URL_ROOT'])
+        self.university_code = unicode(os.environ['BDPY_TEST__UNIVERSITY_CODE'])
 
     def test_authenticate(self):
         """ Tests getting an authentication-id. """
         a = Authenticator( self.logger )
         authentication_id = a.authenticate(
-            self.patron_barcode, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
+            self.patron_barcode, self.api_url_root, self.university_code )
         self.assertEqual(
             27, len(authentication_id) )
 
@@ -113,7 +110,7 @@ class AuthenticatorTests( unittest.TestCase ):
         """ Tests authz session-extender. """
         a = Authenticator( self.logger )
         authentication_id = a.authenticate(
-            self.patron_barcode, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
+            self.patron_barcode, self.api_url_root, self.university_code )
         time.sleep( SLEEP_SECONDS )
         validity = a.authorize(
             self.api_url_root, authentication_id )
