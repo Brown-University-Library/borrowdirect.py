@@ -18,7 +18,6 @@ class Authenticator( object ):
     def authenticate( self, patron_barcode, api_url, api_key, university_code, partnership_id ):
         """ Accesses and returns authentication-id for storage.
             Called by BorrowDirect.run_auth_nz(), Searcher.get_authorization_id(), and Requester.get_authorization_id() """
-        self.logger.debug( 'starting authenticate()' )
         url = '%s/portal-service/user/authentication' % api_url
         headers = { 'Content-type': 'application/json', 'Accept': 'text/plain'}
         params = {
@@ -26,19 +25,9 @@ class Authenticator( object ):
             'UserGroup': 'patron',
             'LibrarySymbol': university_code,
             'PartnershipId': partnership_id,
-            'PatronId': patron_barcode,
-            }
-
-        # self.logger.debug( 'url, `%s`' % url )
-        # self.logger.debug( 'headers, `%s`' % pprint.pformat(headers) )
-        # self.logger.debug( 'params, `%s`' % pprint.pformat(params) )
-
+            'PatronId': patron_barcode }
         r = requests.post( url, data=json.dumps(params), headers=headers )
-        self.logger.debug( 'raw response, `%s`' % r.content )
-
-        dct = r.json()
-        authentication_id = dct['AuthorizationId']
-        self.logger.debug( 'authentication_id, `%s`' % authentication_id )
+        authentication_id = r.json()['AuthorizationId']
         return authentication_id
 
     def authorize( self, api_url, authentication_id ):
@@ -47,9 +36,8 @@ class Authenticator( object ):
         url = '%s/portal-service/user/authz/isAuthorized?aid=%s' % ( api_url, authentication_id )
         r = requests.get( url )
         dct = r.json()
-        state = dct['AuthorizationResult']['AuthorizationState']['State']  # boolean
+        state = dct['AuthorizationState']['State']  # boolean
         assert type( state ) == bool
-        self.logger.debug( 'state, `%s`' % state )
         return state
 
     # end class Authenticator
