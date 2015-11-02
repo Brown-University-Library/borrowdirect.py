@@ -9,7 +9,7 @@ from bdpy.search import Searcher
 from bdpy.request import Requester
 
 
-SLEEP_SECONDS = 2  # if test-server is creaky
+SLEEP_SECONDS = 2  # being nice
 
 
 class BorrowDirectTests( unittest.TestCase ):
@@ -95,15 +95,17 @@ class AuthenticatorTests( unittest.TestCase ):
         self.LOG_PATH = unicode( os.environ['BDPY_TEST__LOG_PATH'] )  # if None  ...outputs to console
         bd = BorrowDirect( {'LOG_PATH': self.LOG_PATH} )
         self.logger = bd.logger
-        self.patron_barcode = unicode(os.environ['BDPY_TEST__PATRON_BARCODE'])
-        self.api_url_root = unicode(os.environ['BDPY_TEST__API_URL_ROOT'])
-        self.university_code = unicode(os.environ['BDPY_TEST__UNIVERSITY_CODE'])
+        self.patron_barcode = unicode( os.environ['BDPY_TEST__PATRON_BARCODE'] )
+        self.api_url_root = unicode( os.environ['BDPY_TEST__API_URL_ROOT'] )
+        self.api_key = unicode( os.environ['BDPY_TEST__API_KEY'] )
+        self.university_code = unicode( os.environ['BDPY_TEST__UNIVERSITY_CODE'] )
+        self.partnership_id = unicode( os.environ['BDPY_TEST__PARTNERSHIP_ID'] )
 
     def test_authenticate(self):
         """ Tests getting an authentication-id. """
         a = Authenticator( self.logger )
         authentication_id = a.authenticate(
-            self.patron_barcode, self.api_url_root, self.university_code )
+            self.patron_barcode, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
         self.assertEqual(
             27, len(authentication_id) )
 
@@ -111,7 +113,7 @@ class AuthenticatorTests( unittest.TestCase ):
         """ Tests authz session-extender. """
         a = Authenticator( self.logger )
         authentication_id = a.authenticate(
-            self.patron_barcode, self.api_url_root, self.university_code )
+            self.patron_barcode, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
         time.sleep( SLEEP_SECONDS )
         validity = a.authorize(
             self.api_url_root, authentication_id )
