@@ -9,7 +9,7 @@ from bdpy.search import Searcher
 from bdpy.request import Requester
 
 
-SLEEP_SECONDS = 2  # test-server is creaky
+SLEEP_SECONDS = 2  # if test-server is creaky
 
 
 class BorrowDirectTests( unittest.TestCase ):
@@ -71,7 +71,8 @@ class BorrowDirectTests( unittest.TestCase ):
         # NOTE: where is the 'RequestLink' key?
 
     # def test_run_request_item(self):
-    #     """ Tests manager requesting. """
+    #     """ Tests manager requesting.
+    #         Commented out because it'll really request the item. """
     #     basics = {
     #         'UNIVERSITY_CODE': self.university_code, 'API_URL_ROOT': self.api_url_root, 'PARTNERSHIP_ID': self.partnership_id, 'PICKUP_LOCATION': self.pickup_location, 'LOG_PATH': self.LOG_PATH }
     #     bd = BorrowDirect( basics )
