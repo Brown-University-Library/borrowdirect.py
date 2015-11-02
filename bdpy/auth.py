@@ -15,18 +15,29 @@ class Authenticator( object ):
     def __init__( self, logger ):
         self.logger = logger
 
-    def authenticate( self, patron_barcode, api_url, university_code ):
+    def authenticate( self, patron_barcode, api_url, api_key, university_code, partnership_id ):
         """ Accesses and returns authentication-id for storage.
-            Called by BorrowDirect.run_auth_nz() """
-        d = {
-            'AuthenticationInformation': {
-            'LibrarySymbol': university_code,
-            'PatronId': patron_barcode } }
+            Called by BorrowDirect.run_auth_nz(), Searcher.get_authorization_id(), and Requester.get_authorization_id() """
+        self.logger.debug( 'starting authenticate()' )
+        url = '%s/portal-service/user/authentication' % api_url
         headers = { 'Content-type': 'application/json', 'Accept': 'text/plain'}
-        url = '%s/portal-service/user/authentication/patron' % api_url
-        r = requests.post( url, data=json.dumps(d), headers=headers )
+        params = {
+            'ApiKey': api_key,
+            'UserGroup': 'patron',
+            'LibrarySymbol': university_code,
+            'PartnershipId': partnership_id,
+            'PatronId': patron_barcode,
+            }
+
+        # self.logger.debug( 'url, `%s`' % url )
+        # self.logger.debug( 'headers, `%s`' % pprint.pformat(headers) )
+        # self.logger.debug( 'params, `%s`' % pprint.pformat(params) )
+
+        r = requests.post( url, data=json.dumps(params), headers=headers )
+        self.logger.debug( 'raw response, `%s`' % r.content )
+
         dct = r.json()
-        authentication_id = dct['Authentication']['AuthnUserInfo']['AId']
+        authentication_id = dct['AuthorizationId']
         self.logger.debug( 'authentication_id, `%s`' % authentication_id )
         return authentication_id
 
