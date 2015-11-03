@@ -138,7 +138,7 @@ class SearcherTests( unittest.TestCase ):
         self.isbn_unavailable = unicode( os.environ['BDPY_TEST__ISBN_UNAVAILABLE'] )
         self.isb_available = unicode( os.environ['BDPY_TEST__ISBN_AVAILABLE'] )
 
-    def test_search_not_available(self):
+    def test_search_unavailable(self):
         """ Tests basic isbn search. """
         s = Searcher( self.logger )
         ( search_key, search_value ) = ( 'ISBN', self.isbn_unavailable )
@@ -170,33 +170,49 @@ class RequesterTests( unittest.TestCase ):
         self.LOG_PATH = unicode( os.environ['BDPY_TEST__LOG_PATH'] )  # if None  ...outputs to console
         bd = BorrowDirect( {'LOG_PATH': self.LOG_PATH} )
         self.logger = bd.logger
-        self.patron_barcode = unicode(os.environ['BDPY_TEST__PATRON_BARCODE'])
-        self.api_url_root = unicode(os.environ['BDPY_TEST__API_URL_ROOT'])
-        self.university_code = unicode(os.environ['BDPY_TEST__UNIVERSITY_CODE'])
-        self.partnership_id = unicode(os.environ['BDPY_TEST__PARTNERSHIP_ID'])
-        self.pickup_location = unicode(os.environ['BDPY_TEST__PICKUP_LOCATION'])
+        self.patron_barcode = unicode( os.environ['BDPY_TEST__PATRON_BARCODE'] )
+        self.api_url_root = unicode( os.environ['BDPY_TEST__API_URL_ROOT'] )
+        self.api_key = unicode( os.environ['BDPY_TEST__API_KEY'] )
+        self.university_code = unicode( os.environ['BDPY_TEST__UNIVERSITY_CODE'] )
+        self.partnership_id = unicode( os.environ['BDPY_TEST__PARTNERSHIP_ID'] )
+        self.pickup_location = unicode( os.environ['BDPY_TEST__PICKUP_LOCATION'] )
+        self.isbn_unavailable = unicode( os.environ['BDPY_TEST__ISBN_UNAVAILABLE'] )
+        self.isb_available = unicode( os.environ['BDPY_TEST__ISBN_AVAILABLE'] )
 
-    def test_request_item__brown_no_and_bd_yes(self):
-        """ Tests exact key-value requesting when...
-                - item not held by Brown
-                - item requestable in BorrowDirect web-interface """
+    def test_request_item_unavailable(self):
+        """ Tests basic isbn search. """
         r = Requester( self.logger )
-        search_key = 'ISBN'
-        search_value = unicode(os.environ['BDPY_TEST__ISBN_BROWN_NO_AND_BD_REQUESTABLE'])
-        request_result_dct = r.request_item( search_key, search_value, self.pickup_location, self.api_url_root, self.patron_barcode, self.university_code, self.partnership_id )
+        ( search_key, search_value ) = ( 'ISBN', self.isbn_unavailable )
+        result_dct = r.request_item(
+            search_key, search_value, self.pickup_location, self.api_url_root, self.api_key, self.patron_barcode, self.university_code, self.partnership_id )
         self.assertEqual(
-            ['Request'], request_result_dct.keys() )
+            ['RequestLink'], sorted(result_dct.keys()) )
         self.assertEqual(
-            ['RequestNumber'], request_result_dct['Request'].keys() )
-        self.assertEqual(
-            'BRO-', request_result_dct['Request']['RequestNumber'][0:4] )
+            ['ButtonLabel', 'ButtonLink', 'RequestMessage'], sorted(result_dct['RequestLink'].keys()) )
+
+    # def test_request_item__brown_no_and_bd_yes(self):
+    #     """ Tests exact key-value requesting when...
+    #             - item not held by Brown
+    #             - item requestable in BorrowDirect web-interface """
+    #     r = Requester( self.logger )
+    #     search_key = 'ISBN'
+    #     search_value = unicode(os.environ['BDPY_TEST__ISBN_BROWN_NO_AND_BD_REQUESTABLE'])
+    #     request_result_dct = r.request_item( search_key, search_value, self.pickup_location, self.api_url_root, self.patron_barcode, self.university_code, self.partnership_id )
+    #     self.assertEqual(
+    #         ['Request'], request_result_dct.keys() )
+    #     self.assertEqual(
+    #         ['RequestNumber'], request_result_dct['Request'].keys() )
+    #     self.assertEqual(
+    #         'BRO-', request_result_dct['Request']['RequestNumber'][0:4] )
 
     def test_build_params( self ):
         """ Tests for all expected params. """
         r = Requester( self.logger )
         ( partnership_id, authorization_id, pickup_location, search_key, search_value ) = ( 'a', 'b', 'c', 'd', 'e' )
         params = r.build_params( partnership_id, authorization_id, pickup_location, search_key, search_value )
-        self.assertEqual( ['AuthorizationId', 'ExactSearch', 'Notes', 'PartnershipId', 'PickupLocation'], sorted(params.keys()) )
+        self.assertEqual(
+            ['ExactSearch', 'Notes', 'PartnershipId', 'PickupLocation'],
+            sorted(params.keys()) )
 
     # end class RequesterTests
 
