@@ -67,7 +67,7 @@ class BorrowDirect( object ):
             Called manually. """
         self.logger.debug( 'starting run_request()...' )
         req = Requester( self.logger )
-        self.request_result = req.request_item( search_key, search_value, self.PICKUP_LOCATION, self.API_URL_ROOT, patron_barcode, self.UNIVERSITY_CODE, self.PARTNERSHIP_ID )
+        self.request_result = req.request_item( search_key, search_value, self.PICKUP_LOCATION, self.API_URL_ROOT, self.API_KEY, patron_barcode, self.UNIVERSITY_CODE, self.PARTNERSHIP_ID )
         self.logger.info( 'run_request() complete' )
         return
 
