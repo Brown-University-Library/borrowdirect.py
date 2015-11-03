@@ -19,15 +19,15 @@ class Searcher( object ):
     def search( self, patron_barcode, search_key, search_value, api_url_root, api_key, university_code, partnership_id ):
         """ Searches for exact key-value.
             Called by BorrowDirect.run_search() """
-        self.logger.debug( 'starting search()...' )
         assert search_key in self.valid_search_keys
         authorization_id = self.get_authorization_id( patron_barcode, api_url_root, api_key, university_code, partnership_id )
         params = self.build_params( partnership_id, university_code, patron_barcode, search_key, search_value )
         url = '%s/dws/item/available?aid=%s' % ( api_url_root, authorization_id )
         headers = { 'Content-type': 'application/json' }
         r = requests.post( url, data=json.dumps(params), headers=headers )
+        self.logger.debug( 'search r.url, `%s`' % r.url )
+        self.logger.debug( 'search r.content, `%s`' % r.content.decode('utf-8') )
         result_dct = r.json()
-        self.logger.debug( 'result_dct, `%s`' % pprint.pformat(result_dct) )
         return result_dct
 
     def get_authorization_id( self, patron_barcode, api_url_root, api_key, university_code, partnership_id ):

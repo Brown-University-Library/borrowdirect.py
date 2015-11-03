@@ -139,7 +139,7 @@ class SearcherTests( unittest.TestCase ):
         self.isb_available = unicode( os.environ['BDPY_TEST__ISBN_AVAILABLE'] )
 
     def test_search_unavailable(self):
-        """ Tests basic isbn search. """
+        """ Tests basic isbn search for unavailable item. """
         s = Searcher( self.logger )
         ( search_key, search_value ) = ( 'ISBN', self.isbn_unavailable )
         result_dct = s.search(
@@ -150,7 +150,7 @@ class SearcherTests( unittest.TestCase ):
             False, result_dct['Available'] )
 
     def test_search_available(self):
-        """ Tests basic isbn search. """
+        """ Tests basic isbn search for available item. """
         s = Searcher( self.logger )
         ( search_key, search_value ) = ( 'ISBN', self.isb_available )
         result_dct = s.search(
@@ -177,33 +177,33 @@ class RequesterTests( unittest.TestCase ):
         self.partnership_id = unicode( os.environ['BDPY_TEST__PARTNERSHIP_ID'] )
         self.pickup_location = unicode( os.environ['BDPY_TEST__PICKUP_LOCATION'] )
         self.isbn_unavailable = unicode( os.environ['BDPY_TEST__ISBN_UNAVAILABLE'] )
-        self.isb_available = unicode( os.environ['BDPY_TEST__ISBN_AVAILABLE'] )
+        self.isbn_available = unicode( os.environ['BDPY_TEST__ISBN_AVAILABLE'] )
 
-    def test_request_item_unavailable(self):
-        """ Tests basic isbn search. """
-        r = Requester( self.logger )
-        ( search_key, search_value ) = ( 'ISBN', self.isbn_unavailable )
-        result_dct = r.request_item(
-            search_key, search_value, self.pickup_location, self.api_url_root, self.api_key, self.patron_barcode, self.university_code, self.partnership_id )
-        self.assertEqual(
-            ['RequestLink'], sorted(result_dct.keys()) )
-        self.assertEqual(
-            ['ButtonLabel', 'ButtonLink', 'RequestMessage'], sorted(result_dct['RequestLink'].keys()) )
+    ## uncomment the two tests to really attempt requests
 
-    # def test_request_item__brown_no_and_bd_yes(self):
-    #     """ Tests exact key-value requesting when...
-    #             - item not held by Brown
-    #             - item requestable in BorrowDirect web-interface """
+    # def test_request_item_unavailable(self):
+    #     """ Tests basic isbn request for unavailable item.
+    #         NOTE: will really attempt a request. """
     #     r = Requester( self.logger )
-    #     search_key = 'ISBN'
-    #     search_value = unicode(os.environ['BDPY_TEST__ISBN_BROWN_NO_AND_BD_REQUESTABLE'])
-    #     request_result_dct = r.request_item( search_key, search_value, self.pickup_location, self.api_url_root, self.patron_barcode, self.university_code, self.partnership_id )
+    #     ( search_key, search_value ) = ( 'ISBN', self.isbn_unavailable )
+    #     result_dct = r.request_item(
+    #         self.patron_barcode, search_key, search_value, self.pickup_location, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
     #     self.assertEqual(
-    #         ['Request'], request_result_dct.keys() )
+    #         ['RequestLink'], sorted(result_dct.keys()) )
     #     self.assertEqual(
-    #         ['RequestNumber'], request_result_dct['Request'].keys() )
+    #         ['ButtonLabel', 'ButtonLink', 'RequestMessage'], sorted(result_dct['RequestLink'].keys()) )
+
+    # def test_request_item_available(self):
+    #     """ Tests basic isbn request for available item.
+    #         NOTE: will really attempt a request. """
+    #     r = Requester( self.logger )
+    #     ( search_key, search_value ) = ( 'ISBN', self.isbn_available )
+    #     result_dct = r.request_item(
+    #         self.patron_barcode, search_key, search_value, self.pickup_location, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
     #     self.assertEqual(
-    #         'BRO-', request_result_dct['Request']['RequestNumber'][0:4] )
+    #         ['RequestNumber'], sorted(result_dct.keys()) )
+    #     self.assertEqual(
+    #         'BRO-', request_result_dct['RequestNumber'][0:4] )
 
     def test_build_params( self ):
         """ Tests for all expected params. """
