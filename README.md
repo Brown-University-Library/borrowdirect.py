@@ -58,7 +58,10 @@ on this page...
         >>> bd.authnz_valid
         True
 
-- BorrowDirect api [documentation](http://borrowdirect.pbworks.com/w/page/83351110/Web%20Services%20Documentation) (requires login)
+- BorrowDirect [api documentation](https://relais.atlassian.net/wiki/display/ILL/Relais+web+services)
+    - [auth](https://relais.atlassian.net/wiki/display/ILL/Authentication)
+    - [search](https://relais.atlassian.net/wiki/display/ILL/Find+Item)
+    - [requesting](https://relais.atlassian.net/wiki/display/ILL/RequestItem)
 
 - bdpy code contact: birkin_diana@brown.edu
 
