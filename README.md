@@ -13,7 +13,7 @@ on this page...
 
 ### installation ###
 
-    $ pip install git+https://github.com/birkin/borrowdirect.py@0.10dev
+    $ pip install git+https://github.com/birkin/borrowdirect.py@0.10
 
 - best to install a 'release' version, as in the example above, though all code in the master branch can be expected to be stable.
 
@@ -26,20 +26,39 @@ on this page...
 - search:
 
         >>> from bdpy import BorrowDirect
-        >>> defaults = { 'UNIVERSITY_CODE': the_code, 'API_URL_ROOT': the_url_root, 'PARTNERSHIP_ID': the_id }
+        >>> defaults = {
+            'API_URL_ROOT': url, 'API_KEY': key, 'PARTNERSHIP_ID': id, 'UNIVERSITY_CODE': code }
         >>> bd = BorrowDirect( defaults )
-        >>> bd.run_search( a_patron_barcode, 'ISBN', '9780688002305' )
-        >>> sorted( bd.search_results['Item'].keys() )
-        [u'AuthorizationId', u'Available', u'PickupLocations', u'SearchTerm']
+        >>> bd.run_search( patron_barcode, 'ISBN', '9780688002305' )
+        >>> pprint( bd.search_result )
+        ## if found but not available via borrowdirect...
+        {u'Available': False,
+         u'RequestLink': {u'ButtonLabel': u'View in the BROWN Library Catalog.',
+                          u'ButtonLink': u'http://josiah.brown.edu/record=.b18151139a',
+                          u'RequestMessage': u'This item is available locally.'}
+        ## if found and available via borrowdirect...
+        {u'Available': True,
+         u'PickupLocation': [{u'PickupLocationCode': u'A',
+                              u'PickupLocationDescription': u'Rockefeller Library'}],
+         u'RequestLink': {u'ButtonLabel': u'Request',
+                          u'ButtonLink': u'AddRequest',
+                          u'RequestMessage': u'Request this through Borrow Direct.'},
+         u'SearchTerm': u'isbn=9780688002305'}
 
 - or request:
 
         >>> from bdpy import BorrowDirect
-        >>> defaults = { 'UNIVERSITY_CODE': the_code, 'API_URL_ROOT': the_url_root, 'PARTNERSHIP_ID': the_id, 'PICKUP_LOCATION': the_location }
+        >>> defaults = {
+            'API_URL_ROOT': url, 'API_KEY': key, 'PARTNERSHIP_ID': id, 'UNIVERSITY_CODE': code, 'PICKUP_LOCATION': location }
         >>> bd = BorrowDirect( defaults )
-        >>> bd.run_request_item( a_patron_barcode, 'ISBN', '9780688002305' )
-        >>> bd.request_result
-        {u'Request': {u'RequestNumber': u'BRO-12345678'}}
+        >>> bd.run_request_item( patron_barcode, 'ISBN', '9780688002305' )
+        >>> pprint( bd.request_result )
+        ## if found but not available via borrowdirect...
+        {u'RequestLink': {u'ButtonLabel': u'View in the BROWN Library Catalog.',
+                          u'ButtonLink': u'http://josiah.brown.edu/record=.b18151139a',
+                          u'RequestMessage': u'This item is available locally.'}}
+        ## if found and available via borrowdirect...
+        {u'RequestNumber': u'BRO-12345678'}
 
 
 
@@ -65,7 +84,13 @@ on this page...
 
 - bdpy code contact: birkin_diana@brown.edu
 
+- lightweight [flask-app](https://github.com/birkin/bdpyweb_code) that turns this bdpy library into a webservice that can be accessed from any language
+
 - ruby [borrowdirect-api wrapper](https://github.com/jrochkind/borrow_direct)
+
+- note: this code uses the November 2015 version of the Relais BorrowDirect api. To use this library with the previous version of the api:
+
+        $ pip install git+https://github.com/birkin/borrowdirect.py@0.09b
 
 
 
