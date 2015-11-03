@@ -120,7 +120,7 @@ class AuthenticatorTests( unittest.TestCase ):
         self.assertEqual(
             True, validity )
 
-    # end class AuthTests
+    # end class AuthenticatorTests
 
 
 class SearcherTests( unittest.TestCase ):
@@ -130,21 +130,35 @@ class SearcherTests( unittest.TestCase ):
         self.LOG_PATH = unicode( os.environ['BDPY_TEST__LOG_PATH'] )  # if None  ...outputs to console
         bd = BorrowDirect( {'LOG_PATH': self.LOG_PATH} )
         self.logger = bd.logger
-        self.patron_barcode = unicode(os.environ['BDPY_TEST__PATRON_BARCODE'])
-        self.api_url_root = unicode(os.environ['BDPY_TEST__API_URL_ROOT'])
-        self.university_code = unicode(os.environ['BDPY_TEST__UNIVERSITY_CODE'])
-        self.partnership_id = unicode(os.environ['BDPY_TEST__PARTNERSHIP_ID'])
+        self.patron_barcode = unicode( os.environ['BDPY_TEST__PATRON_BARCODE'] )
+        self.api_url_root = unicode( os.environ['BDPY_TEST__API_URL_ROOT'] )
+        self.api_key = unicode( os.environ['BDPY_TEST__API_KEY'] )
+        self.university_code = unicode( os.environ['BDPY_TEST__UNIVERSITY_CODE'] )
+        self.partnership_id = unicode( os.environ['BDPY_TEST__PARTNERSHIP_ID'] )
+        self.isbn_unavailable = unicode( os.environ['BDPY_TEST__ISBN_UNAVAILABLE'] )
+        self.isb_available = unicode( os.environ['BDPY_TEST__ISBN_AVAILABLE'] )
 
-    def test_search(self):
-        """ Tests basic key-value search. """
+    def test_search_not_available(self):
+        """ Tests basic isbn search. """
         s = Searcher( self.logger )
-        ( search_key, search_value ) = ( 'ISBN', '9780688002305' )  # Zen & the Art of Motorcycle Maintenance (also #0688002307)
+        ( search_key, search_value ) = ( 'ISBN', self.isbn_unavailable )
         result_dct = s.search(
-            self.patron_barcode, search_key, search_value, self.api_url_root, self.university_code, self.partnership_id )
-        for key in ['AuthorizationId', 'Available', 'PickupLocations', 'SearchTerm']:
-            self.assertTrue(
-                key in result_dct['Item'].keys() )
-        # NOTE: where is the 'RequestLink' key?
+            self.patron_barcode, search_key, search_value, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
+        self.assertEqual(
+            ['Available', 'RequestLink', 'SearchTerm'], sorted(result_dct.keys()) )
+        self.assertEqual(
+            False, result_dct['Available'] )
+
+    def test_search_available(self):
+        """ Tests basic isbn search. """
+        s = Searcher( self.logger )
+        ( search_key, search_value ) = ( 'ISBN', self.isb_available )
+        result_dct = s.search(
+            self.patron_barcode, search_key, search_value, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
+        self.assertEqual(
+            ['Available', 'PickupLocation', 'RequestLink', 'SearchTerm'], sorted(result_dct.keys()) )
+        self.assertEqual(
+            True, result_dct['Available'] )
 
     # end class SearcherTests
 
@@ -184,7 +198,7 @@ class RequesterTests( unittest.TestCase ):
         params = r.build_params( partnership_id, authorization_id, pickup_location, search_key, search_value )
         self.assertEqual( ['AuthorizationId', 'ExactSearch', 'Notes', 'PartnershipId', 'PickupLocation'], sorted(params.keys()) )
 
-
+    # end class RequesterTests
 
 
 if __name__ == '__main__':
