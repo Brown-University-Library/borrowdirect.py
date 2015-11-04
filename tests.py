@@ -23,6 +23,8 @@ class BorrowDirectTests( unittest.TestCase ):
         self.university_code = unicode( os.environ['BDPY_TEST__UNIVERSITY_CODE'] )
         self.partnership_id = unicode( os.environ['BDPY_TEST__PARTNERSHIP_ID'] )
         self.pickup_location = unicode( os.environ['BDPY_TEST__PICKUP_LOCATION'] )
+        self.isbn_found_and_available = unicode( os.environ['BDPY_TEST__ISBN_FOUND_AND_AVAILABLE'] )
+        self.isbn_found_and_unavailable = unicode( os.environ['BDPY_TEST__ISBN_FOUND_AND_UNAVAILABLE'] )
         self.isbn_not_found = unicode( os.environ['BDPY_TEST__ISBN_NOT_FOUND'] )
 
     def test_settings_instantiation(self):
@@ -64,31 +66,77 @@ class BorrowDirectTests( unittest.TestCase ):
         self.assertEqual(
             True, bd.authnz_valid )
 
-    def test_run_search(self):
-        """ Tests manager item availability check. """
+    def test_run_search__found_and_available(self):
+        """ Tests search for item found and available. """
         basics = {
-            'API_URL_ROOT': self.api_url_root, 'API_KEY': self.api_key, 'PARTNERSHIP_ID': self.partnership_id, 'UNIVERSITY_CODE': self.university_code, 'LOG_PATH': self.LOG_PATH }
+            'API_URL_ROOT': self.api_url_root,
+            'API_KEY': self.api_key,
+            'PARTNERSHIP_ID': self.partnership_id,
+            'UNIVERSITY_CODE': self.university_code,
+            'LOG_PATH': self.LOG_PATH }
+        bd = BorrowDirect( basics )
+        bd.run_search( self.patron_barcode, 'ISBN', self.isbn_found_and_available )
+        # print bd.search_result
+        self.assertEqual( ['Available', 'PickupLocation', 'RequestLink', 'SearchTerm'], sorted(bd.search_result.keys()) )
+        self.assertEqual( True, bd.search_result['Available'] )
+
+    def test_run_search__found_and_unavailable(self):
+        """ Tests search for item found and unavailable. """
+        basics = {
+            'API_URL_ROOT': self.api_url_root,
+            'API_KEY': self.api_key,
+            'PARTNERSHIP_ID': self.partnership_id,
+            'UNIVERSITY_CODE': self.university_code,
+            'LOG_PATH': self.LOG_PATH }
+        bd = BorrowDirect( basics )
+        bd.run_search( self.patron_barcode, 'ISBN', self.isbn_found_and_unavailable )
+        self.assertEqual( ['Available', 'RequestLink', 'SearchTerm'], sorted(bd.search_result.keys()) )
+        self.assertEqual( False, bd.search_result['Available'] )
+
+    def test_run_search__not_found(self):
+        """ Tests search for item not found. """
+        basics = {
+            'API_URL_ROOT': self.api_url_root,
+            'API_KEY': self.api_key,
+            'PARTNERSHIP_ID': self.partnership_id,
+            'UNIVERSITY_CODE': self.university_code,
+            'LOG_PATH': self.LOG_PATH }
         bd = BorrowDirect( basics )
         bd.run_search( self.patron_barcode, 'ISBN', self.isbn_not_found )
-        self.assertEqual(
-            ['Problem'], sorted(bd.search_result.keys()) )
-        self.assertEqual(
-            'foo', bd.search_result['ErrorMessage'] )
+        self.assertEqual( ['Problem'], sorted(bd.search_result.keys()) )
+        self.assertEqual( 'No result', bd.search_result['Problem']['ErrorMessage'] )
 
-    # def test_run_request_item(self):
+    # def test_run_request_item__found_and_available(self):
     #     """ Tests manager requesting.
     #         Commented out because it'll really request the item. """
     #     basics = {
-    #         'UNIVERSITY_CODE': self.university_code, 'API_URL_ROOT': self.api_url_root, 'PARTNERSHIP_ID': self.partnership_id, 'PICKUP_LOCATION': self.pickup_location, 'LOG_PATH': self.LOG_PATH }
+    #         'API_URL_ROOT': self.api_url_root,
+    #         'API_KEY': self.api_key,
+    #         'PARTNERSHIP_ID': self.partnership_id,
+    #         'UNIVERSITY_CODE': self.university_code,
+    #         'PICKUP_LOCATION': self.pickup_location,
+    #         'LOG_PATH': self.LOG_PATH }
     #     bd = BorrowDirect( basics )
-    #     search_value = unicode(os.environ['BDPY_TEST__ISBN_BROWN_NO_AND_BD_REQUESTABLE'])
-    #     bd.run_request_item( self.patron_barcode, 'ISBN', search_value )
+    #     bd.run_request_item( self.patron_barcode, 'ISBN', self.isbn_found_and_available )
     #     self.assertEqual(
-    #         ['Request'], bd.request_result.keys() )
+    #         ['RequestNumber'], sorted(bd.request_result.keys()) )
     #     self.assertEqual(
-    #         ['RequestNumber'], bd.request_result['Request'].keys() )
-    #     self.assertEqual(
-    #         'BRO-', bd.request_result['Request']['RequestNumber'][0:4] )
+    #         'BRO-', bd.request_result['RequestNumber'][0:4] )
+
+    def test_run_request_item__not_found(self):
+        """ Tests manager requesting on not-found item.
+            Note that this will really attempt the request. """
+        basics = {
+            'API_URL_ROOT': self.api_url_root,
+            'API_KEY': self.api_key,
+            'PARTNERSHIP_ID': self.partnership_id,
+            'UNIVERSITY_CODE': self.university_code,
+            'PICKUP_LOCATION': self.pickup_location,
+            'LOG_PATH': self.LOG_PATH }
+        bd = BorrowDirect( basics )
+        bd.run_request_item( self.patron_barcode, 'ISBN', self.isbn_not_found )
+        self.assertEqual(
+            {'Problem': {'ErrorCode': 'PUBRI003', 'ErrorMessage': 'No result'}}, bd.request_result )
 
     # end class BorrowDirectTests
 
@@ -140,30 +188,42 @@ class SearcherTests( unittest.TestCase ):
         self.api_key = unicode( os.environ['BDPY_TEST__API_KEY'] )
         self.university_code = unicode( os.environ['BDPY_TEST__UNIVERSITY_CODE'] )
         self.partnership_id = unicode( os.environ['BDPY_TEST__PARTNERSHIP_ID'] )
-        self.isbn_unavailable = unicode( os.environ['BDPY_TEST__ISBN_UNAVAILABLE'] )
-        self.isb_available = unicode( os.environ['BDPY_TEST__ISBN_AVAILABLE'] )
+        self.isbn_found_and_available = unicode( os.environ['BDPY_TEST__ISBN_FOUND_AND_AVAILABLE'] )
+        self.isbn_found_and_unavailable = unicode( os.environ['BDPY_TEST__ISBN_FOUND_AND_UNAVAILABLE'] )
+        self.isbn_not_found = unicode( os.environ['BDPY_TEST__ISBN_NOT_FOUND'] )
 
-    def test_search_unavailable(self):
-        """ Tests basic isbn search for unavailable item. """
+    def test_search_found_available(self):
+        """ Tests basic isbn search for available found item. """
         s = Searcher( self.logger )
-        ( search_key, search_value ) = ( 'ISBN', self.isbn_unavailable )
-        result_dct = s.search(
-            self.patron_barcode, search_key, search_value, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
-        self.assertEqual(
-            ['Available', 'RequestLink', 'SearchTerm'], sorted(result_dct.keys()) )
-        self.assertEqual(
-            False, result_dct['Available'] )
-
-    def test_search_available(self):
-        """ Tests basic isbn search for available item. """
-        s = Searcher( self.logger )
-        ( search_key, search_value ) = ( 'ISBN', self.isb_available )
+        ( search_key, search_value ) = ( 'ISBN', self.isbn_found_and_available )
         result_dct = s.search(
             self.patron_barcode, search_key, search_value, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
         self.assertEqual(
             ['Available', 'PickupLocation', 'RequestLink', 'SearchTerm'], sorted(result_dct.keys()) )
         self.assertEqual(
             True, result_dct['Available'] )
+
+    def test_search_found_unavailable(self):
+        """ Tests basic isbn search for unavailable found item. """
+        s = Searcher( self.logger )
+        ( search_key, search_value ) = ( 'ISBN', self.isbn_found_and_unavailable )
+        result_dct = s.search(
+            self.patron_barcode, search_key, search_value, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
+        self.assertEqual(
+            ['Available', 'PickupLocation', 'RequestLink', 'SearchTerm'], sorted(result_dct.keys()) )
+        self.assertEqual(
+            True, result_dct['Available'] )
+
+    def test_search_not_found(self):
+        """ Tests basic isbn search for not-found item. """
+        s = Searcher( self.logger )
+        ( search_key, search_value ) = ( 'ISBN', self.isbn_not_found )
+        result_dct = s.search(
+            self.patron_barcode, search_key, search_value, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
+        self.assertEqual(
+            ['Available', 'RequestLink', 'SearchTerm'], sorted(result_dct.keys()) )
+        self.assertEqual(
+            False, result_dct['Available'] )
 
     # end class SearcherTests
 
@@ -181,34 +241,31 @@ class RequesterTests( unittest.TestCase ):
         self.university_code = unicode( os.environ['BDPY_TEST__UNIVERSITY_CODE'] )
         self.partnership_id = unicode( os.environ['BDPY_TEST__PARTNERSHIP_ID'] )
         self.pickup_location = unicode( os.environ['BDPY_TEST__PICKUP_LOCATION'] )
-        self.isbn_unavailable = unicode( os.environ['BDPY_TEST__ISBN_UNAVAILABLE'] )
-        self.isbn_available = unicode( os.environ['BDPY_TEST__ISBN_AVAILABLE'] )
-
-    ## uncomment the two tests to really attempt requests
-
-    # def test_request_item_unavailable(self):
-    #     """ Tests basic isbn request for unavailable item.
-    #         NOTE: will really attempt a request. """
-    #     r = Requester( self.logger )
-    #     ( search_key, search_value ) = ( 'ISBN', self.isbn_unavailable )
-    #     result_dct = r.request_item(
-    #         self.patron_barcode, search_key, search_value, self.pickup_location, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
-    #     self.assertEqual(
-    #         ['RequestLink'], sorted(result_dct.keys()) )
-    #     self.assertEqual(
-    #         ['ButtonLabel', 'ButtonLink', 'RequestMessage'], sorted(result_dct['RequestLink'].keys()) )
+        self.isbn_found_and_available = unicode( os.environ['BDPY_TEST__ISBN_FOUND_AND_AVAILABLE'] )
+        self.isbn_found_and_unavailable = unicode( os.environ['BDPY_TEST__ISBN_FOUND_AND_UNAVAILABLE'] )
+        self.isbn_not_found = unicode( os.environ['BDPY_TEST__ISBN_NOT_FOUND'] )
 
     # def test_request_item_available(self):
-    #     """ Tests basic isbn request for available item.
+    #     """ Tests basic isbn request for available found item.
     #         NOTE: will really attempt a request. """
     #     r = Requester( self.logger )
-    #     ( search_key, search_value ) = ( 'ISBN', self.isbn_available )
+    #     ( search_key, search_value ) = ( 'ISBN', self.isbn_found_and_unavailable )
     #     result_dct = r.request_item(
     #         self.patron_barcode, search_key, search_value, self.pickup_location, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
     #     self.assertEqual(
     #         ['RequestNumber'], sorted(result_dct.keys()) )
     #     self.assertEqual(
     #         'BRO-', request_result_dct['RequestNumber'][0:4] )
+
+    def test_request_item_not_found(self):
+        """ Tests basic isbn request for not-found item.
+            NOTE: will really attempt a request. """
+        r = Requester( self.logger )
+        ( search_key, search_value ) = ( 'ISBN', self.isbn_not_found )
+        result_dct = r.request_item(
+            self.patron_barcode, search_key, search_value, self.pickup_location, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
+        self.assertEqual(
+            {'Problem': {'ErrorCode': 'PUBRI003', 'ErrorMessage': 'No result'}}, result_dct )
 
     def test_build_params( self ):
         """ Tests for all expected params. """
