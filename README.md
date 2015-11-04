@@ -2,6 +2,8 @@
 
 'bdpy' faciliates programmatic access to the API to [BorrowDirect](http://www.borrowdirect.org), an academic book-borrowing consortium.
 
+We use this in production for our 15,000+ successful automated BorrowDirect requests -- _and_ for thousands more automated searches for items that are either unavailable or not-found.
+
 on this page...
 
 - installation
@@ -67,6 +69,9 @@ on this page...
                          'ButtonLink': 'http://josiah.brown.edu/record=.b18151139a',
                          'RequestMessage': 'This item is available locally.'}}
 
+        ## if not found
+        {u'Problem': {u'ErrorCode': u'PUBRI003', u'ErrorMessage': u'No result'}}
+
 
 
 ### notes ###
@@ -86,18 +91,24 @@ on this page...
 
 - BorrowDirect [api documentation](https://relais.atlassian.net/wiki/display/ILL/Relais+web+services)
     - [auth](https://relais.atlassian.net/wiki/display/ILL/Authentication)
-    - [search](https://relais.atlassian.net/wiki/display/ILL/Find+Item)
+    - [searching](https://relais.atlassian.net/wiki/display/ILL/Find+Item)
     - [requesting](https://relais.atlassian.net/wiki/display/ILL/RequestItem)
 
 - bdpy code contact: birkin_diana@brown.edu
 
-- lightweight [flask-app](https://github.com/birkin/bdpyweb_code) that turns this bdpy library into a webservice that can be accessed from any language
+- check out [bdpyweb](https://github.com/birkin/bdpyweb_code), a lightweight [flask](http://flask.pocoo.org) app that turns this bdpy library into a webservice that can be accessed from any language. (This is how our automated [easyBorrow](http://library.brown.edu/borrowing/easyBorrow.php) system requests books for our patrons.)
 
 - ruby [borrowdirect-api wrapper](https://github.com/jrochkind/borrow_direct)
 
 - note: this code uses the November 2015 version of the Relais BorrowDirect api. To use this library with the previous version of the api:
 
         $ pip install git+https://github.com/birkin/borrowdirect.py@0.09b
+
+    This is only a convenience of version-control; I'm not maintaining the code for the old BorrowDirect api.
+
+- dev gotchas...
+    - If you forget to include your partnership-id, you'll get back, on the auth-attempt, a message that your api-key is incorrect even if it's correct.
+    - I've seen an instance where the search-api indicates, correctly, that an item is found but not available, because it's held and available locally -- _BUT_, the item _is_ requestable via the request-api. I have been told that anything successfully requested via the api will not be cancelled.
 
 
 
