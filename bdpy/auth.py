@@ -15,19 +15,19 @@ class Authenticator( object ):
     def __init__( self, logger ):
         self.logger = logger
 
-    def authenticate( self, patron_barcode, api_url, api_key, university_code, partnership_id ):
+    def authenticate( self, patron_barcode, api_url, api_key, partnership_id, university_code ):
         """ Accesses and returns authentication-id for storage.
             Called by BorrowDirect.run_auth_nz(), Searcher.get_authorization_id(), and Requester.get_authorization_id() """
         url = '%s/portal-service/user/authentication' % api_url
         headers = { 'Content-type': 'application/json', 'Accept': 'text/plain'}
-        params = self._make_auth_params( patron_barcode, api_url, api_key, university_code, partnership_id )
+        params = self._make_auth_params( patron_barcode, api_url, api_key, partnership_id, university_code )
         self.logger.debug( 'params, `%s`' % pprint.pformat(params) )
         r = requests.post( url, data=json.dumps(params), headers=headers )
         self.logger.debug( 'auth response, `%s`' % unicode(r.content) )
         authentication_id = r.json()['AuthorizationId']
         return authentication_id
 
-    def _make_auth_params( self, patron_barcode, api_url, api_key, university_code, partnership_id ):
+    def _make_auth_params( self, patron_barcode, api_url, api_key, partnership_id, university_code ):
         """ Preps param dict.
             Called by authenticate() """
         params = {

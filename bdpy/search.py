@@ -16,7 +16,7 @@ class Searcher( object ):
         self.logger = logger
         self.valid_search_keys = [ 'ISBN', 'ISSN', 'LCCN', 'OCLC', 'PHRASE' ]
 
-    def search( self, patron_barcode, search_key, search_value, api_url_root, api_key, university_code, partnership_id ):
+    def search( self, patron_barcode, search_key, search_value, api_url_root, api_key, partnership_id, university_code ):
         """ Searches for exact key-value.
             Called by BorrowDirect.run_search() """
         assert search_key in self.valid_search_keys
@@ -30,7 +30,7 @@ class Searcher( object ):
         result_dct = r.json()
         return result_dct
 
-    def get_authorization_id( self, patron_barcode, api_url_root, api_key, university_code, partnership_id ):
+    def get_authorization_id( self, patron_barcode, api_url_root, api_key, partnership_id, university_code ):
         """ Obtains authorization_id.
             Called by search()
             Note that only the authenticator webservice is called;

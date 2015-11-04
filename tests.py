@@ -158,7 +158,7 @@ class AuthenticatorTests( unittest.TestCase ):
         """ Tests getting an authentication-id. """
         a = Authenticator( self.logger )
         authentication_id = a.authenticate(
-            self.patron_barcode, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
+            self.patron_barcode, self.api_url_root, self.api_key, self.partnership_id, self.university_code )
         self.assertEqual(
             27, len(authentication_id) )
 
@@ -166,7 +166,7 @@ class AuthenticatorTests( unittest.TestCase ):
         """ Tests authz session-extender. """
         a = Authenticator( self.logger )
         authentication_id = a.authenticate(
-            self.patron_barcode, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
+            self.patron_barcode, self.api_url_root, self.api_key, self.partnership_id, self.university_code )
         time.sleep( SLEEP_SECONDS )
         validity = a.authorize(
             self.api_url_root, authentication_id )
@@ -197,7 +197,7 @@ class SearcherTests( unittest.TestCase ):
         s = Searcher( self.logger )
         ( search_key, search_value ) = ( 'ISBN', self.isbn_found_and_available )
         result_dct = s.search(
-            self.patron_barcode, search_key, search_value, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
+            self.patron_barcode, search_key, search_value, self.api_url_root, self.api_key, self.partnership_id, self.university_code )
         self.assertEqual(
             ['Available', 'PickupLocation', 'RequestLink', 'SearchTerm'], sorted(result_dct.keys()) )
         self.assertEqual(
@@ -208,7 +208,7 @@ class SearcherTests( unittest.TestCase ):
         s = Searcher( self.logger )
         ( search_key, search_value ) = ( 'ISBN', self.isbn_found_and_unavailable )
         result_dct = s.search(
-            self.patron_barcode, search_key, search_value, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
+            self.patron_barcode, search_key, search_value, self.api_url_root, self.api_key, self.partnership_id, self.university_code )
         self.assertEqual(
             [u'Available', u'RequestLink', u'SearchTerm'], sorted(result_dct.keys()) )
         self.assertEqual(
@@ -219,7 +219,7 @@ class SearcherTests( unittest.TestCase ):
         s = Searcher( self.logger )
         ( search_key, search_value ) = ( 'ISBN', self.isbn_not_found )
         result_dct = s.search(
-            self.patron_barcode, search_key, search_value, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
+            self.patron_barcode, search_key, search_value, self.api_url_root, self.api_key, self.partnership_id, self.university_code )
         self.assertEqual(
             {"Problem":{"ErrorCode":"PUBFI002","ErrorMessage":"No result"}}, result_dct )
 
@@ -245,15 +245,15 @@ class RequesterTests( unittest.TestCase ):
 
     # def test_request_item_found_and_available(self):
     #     """ Tests basic isbn request for available found item.
-    #         NOTE: will really attempt a request. """
+    #         NOTE: commented out because this will really request the item. """
     #     r = Requester( self.logger )
-    #     ( search_key, search_value ) = ( 'ISBN', self.isbn_found_and_unavailable )
+    #     ( search_key, search_value ) = ( 'ISBN', self.isbn_found_and_available )
     #     result_dct = r.request_item(
-    #         self.patron_barcode, search_key, search_value, self.pickup_location, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
+    #         self.patron_barcode, search_key, search_value, self.pickup_location, self.api_url_root, self.api_key, self.partnership_id, self.university_code )
     #     self.assertEqual(
     #         ['RequestNumber'], sorted(result_dct.keys()) )
     #     self.assertEqual(
-    #         'BRO-', request_result_dct['RequestNumber'][0:4] )
+    #         'BRO-', result_dct['RequestNumber'][0:4] )
 
     def test_request_item_not_found(self):
         """ Tests basic isbn request for not-found item.
@@ -261,7 +261,7 @@ class RequesterTests( unittest.TestCase ):
         r = Requester( self.logger )
         ( search_key, search_value ) = ( 'ISBN', self.isbn_not_found )
         result_dct = r.request_item(
-            self.patron_barcode, search_key, search_value, self.pickup_location, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
+            self.patron_barcode, search_key, search_value, self.pickup_location, self.api_url_root, self.api_key, self.partnership_id, self.university_code )
         self.assertEqual(
             {'Problem': {'ErrorCode': 'PUBRI003', 'ErrorMessage': 'No result'}}, result_dct )
 
