@@ -103,8 +103,8 @@ class BorrowDirectTests( unittest.TestCase ):
             'LOG_PATH': self.LOG_PATH }
         bd = BorrowDirect( basics )
         bd.run_search( self.patron_barcode, 'ISBN', self.isbn_not_found )
-        self.assertEqual( ['Problem'], sorted(bd.search_result.keys()) )
-        self.assertEqual( 'No result', bd.search_result['Problem']['ErrorMessage'] )
+        self.assertEqual(
+            {"Problem":{"ErrorCode":"PUBFI002","ErrorMessage":"No result"}}, bd.search_result )
 
     # def test_run_request_item__found_and_available(self):
     #     """ Tests manager requesting.
@@ -210,9 +210,9 @@ class SearcherTests( unittest.TestCase ):
         result_dct = s.search(
             self.patron_barcode, search_key, search_value, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
         self.assertEqual(
-            ['Available', 'PickupLocation', 'RequestLink', 'SearchTerm'], sorted(result_dct.keys()) )
+            [u'Available', u'RequestLink', u'SearchTerm'], sorted(result_dct.keys()) )
         self.assertEqual(
-            True, result_dct['Available'] )
+            False, result_dct['Available'] )
 
     def test_search_not_found(self):
         """ Tests basic isbn search for not-found item. """
@@ -221,9 +221,7 @@ class SearcherTests( unittest.TestCase ):
         result_dct = s.search(
             self.patron_barcode, search_key, search_value, self.api_url_root, self.api_key, self.university_code, self.partnership_id )
         self.assertEqual(
-            ['Available', 'RequestLink', 'SearchTerm'], sorted(result_dct.keys()) )
-        self.assertEqual(
-            False, result_dct['Available'] )
+            {"Problem":{"ErrorCode":"PUBFI002","ErrorMessage":"No result"}}, result_dct )
 
     # end class SearcherTests
 
@@ -245,7 +243,7 @@ class RequesterTests( unittest.TestCase ):
         self.isbn_found_and_unavailable = unicode( os.environ['BDPY_TEST__ISBN_FOUND_AND_UNAVAILABLE'] )
         self.isbn_not_found = unicode( os.environ['BDPY_TEST__ISBN_NOT_FOUND'] )
 
-    # def test_request_item_available(self):
+    # def test_request_item_found_and_available(self):
     #     """ Tests basic isbn request for available found item.
     #         NOTE: will really attempt a request. """
     #     r = Requester( self.logger )
