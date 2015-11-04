@@ -44,8 +44,6 @@ class BorrowDirect( object ):
         self.logger.debug( 'starting run_auth_nz()...' )
         authr = Authenticator( self.logger )
         self.AId = authr.authenticate(
-            patron_barcode, self.API_URL_ROOT, self.UNIVERSITY_CODE )
-        self.AId = authr.authenticate(
             patron_barcode, self.API_URL_ROOT, self.API_KEY, self.UNIVERSITY_CODE, self.PARTNERSHIP_ID )
         time.sleep( 1 )
         self.authnz_valid = authr.authorize(
