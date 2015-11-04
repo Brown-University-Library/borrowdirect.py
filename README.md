@@ -31,19 +31,24 @@ on this page...
         >>> bd = BorrowDirect( defaults )
         >>> bd.run_search( patron_barcode, 'ISBN', '9780688002305' )
         >>> pprint( bd.search_result )
-        ## if found but not available via borrowdirect...
-        {u'Available': False,
-         u'RequestLink': {u'ButtonLabel': u'View in the BROWN Library Catalog.',
-                          u'ButtonLink': u'http://josiah.brown.edu/record=.b18151139a',
-                          u'RequestMessage': u'This item is available locally.'}
+
         ## if found and available via borrowdirect...
-        {u'Available': True,
-         u'PickupLocation': [{u'PickupLocationCode': u'A',
-                              u'PickupLocationDescription': u'Rockefeller Library'}],
-         u'RequestLink': {u'ButtonLabel': u'Request',
-                          u'ButtonLink': u'AddRequest',
-                          u'RequestMessage': u'Request this through Borrow Direct.'},
-         u'SearchTerm': u'isbn=9780688002305'}
+        {'Available': True,
+         'PickupLocation': [{'PickupLocationCode': 'A',
+                             'PickupLocationDescription': 'Rockefeller Library'}],
+         'RequestLink': {'ButtonLabel': 'Request',
+                         'ButtonLink': 'AddRequest',
+                         'RequestMessage': 'Request this through Borrow Direct.'},
+         'SearchTerm': 'isbn=9780688002305'}
+
+        ## if found but not available via borrowdirect...
+        {'Available': False,
+         'RequestLink': {'ButtonLabel': 'View in the BROWN Library Catalog.',
+                         'ButtonLink': 'http://josiah.brown.edu/record=.b18151139a',
+                         'RequestMessage': 'This item is available locally.'}
+
+        ## if not found
+        {"Problem":{"ErrorCode":"PUBFI002","ErrorMessage":"No result"}}
 
 - or request:
 
@@ -53,12 +58,14 @@ on this page...
         >>> bd = BorrowDirect( defaults )
         >>> bd.run_request_item( patron_barcode, 'ISBN', '9780688002305' )
         >>> pprint( bd.request_result )
-        ## if found but not available via borrowdirect...
-        {u'RequestLink': {u'ButtonLabel': u'View in the BROWN Library Catalog.',
-                          u'ButtonLink': u'http://josiah.brown.edu/record=.b18151139a',
-                          u'RequestMessage': u'This item is available locally.'}}
+
         ## if found and available via borrowdirect...
-        {u'RequestNumber': u'BRO-12345678'}
+        {'RequestNumber': 'BRO-12345678'}
+
+        ## if found but not available via borrowdirect...
+        {'RequestLink': {'ButtonLabel': 'View in the BROWN Library Catalog.',
+                         'ButtonLink': 'http://josiah.brown.edu/record=.b18151139a',
+                         'RequestMessage': 'This item is available locally.'}}
 
 
 
