@@ -44,7 +44,7 @@ class BorrowDirect( object ):
         self.logger.debug( 'starting run_auth_nz()...' )
         authr = Authenticator( self.logger )
         self.AId = authr.authenticate(
-            patron_barcode, self.API_URL_ROOT, self.API_KEY, self.UNIVERSITY_CODE, self.PARTNERSHIP_ID )
+            patron_barcode, self.API_URL_ROOT, self.API_KEY, self.PARTNERSHIP_ID, self.UNIVERSITY_CODE )
         time.sleep( 1 )
         self.authnz_valid = authr.authorize(
             self.API_URL_ROOT, self.AId )
@@ -56,7 +56,7 @@ class BorrowDirect( object ):
             Called manually. """
         self.logger.debug( 'starting run_search()...' )
         srchr = Searcher( self.logger )
-        self.search_result = srchr.search( patron_barcode, search_key, search_value, self.API_URL_ROOT, self.API_KEY, self.UNIVERSITY_CODE, self.PARTNERSHIP_ID )
+        self.search_result = srchr.search( patron_barcode, search_key, search_value, self.API_URL_ROOT, self.API_KEY, self.PARTNERSHIP_ID, self.UNIVERSITY_CODE )
         self.logger.info( 'run_search() complete' )
         return
 
@@ -65,7 +65,7 @@ class BorrowDirect( object ):
             Called manually. """
         self.logger.debug( 'starting run_request()...' )
         req = Requester( self.logger )
-        self.request_result = req.request_item( patron_barcode, search_key, search_value, self.PICKUP_LOCATION, self.API_URL_ROOT, self.API_KEY, self.UNIVERSITY_CODE, self.PARTNERSHIP_ID )
+        self.request_result = req.request_item( patron_barcode, search_key, search_value, self.PICKUP_LOCATION, self.API_URL_ROOT, self.API_KEY, self.PARTNERSHIP_ID, self.UNIVERSITY_CODE )
         self.logger.info( 'run_request() complete' )
         return
 
