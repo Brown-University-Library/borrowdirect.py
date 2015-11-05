@@ -2,7 +2,7 @@
 
 'bdpy' faciliates programmatic access to the API to [BorrowDirect](http://www.borrowdirect.org), an academic book-borrowing consortium.
 
-We use this in production for our 15,000+ successful automated BorrowDirect requests -- _and_ for thousands more automated searches for items that are either unavailable or not-found.
+We use this in production for our 15,000+ successful automated BorrowDirect requests each year -- _and_ for thousands more automated searches for items that are either unavailable or not-found.
 
 on this page...
 
@@ -81,9 +81,10 @@ on this page...
 - no need to call the auth wrapper explicitly -- the calls to search and request do it automatically -- but you could if you wanted to:
 
         >>> from bdpy import BorrowDirect
-        >>> defaults = { 'UNIVERSITY_CODE': the_code, 'API_URL_ROOT': the_url_root }
+        >>> defaults = {
+            'API_URL_ROOT': url, 'API_KEY': key, 'PARTNERSHIP_ID': id, 'UNIVERSITY_CODE': code }
         >>> bd = BorrowDirect( defaults )
-        >>> bd.run_auth_nz( a_patron_barcode )  # performs authN/Z & stores authorization-id
+        >>> bd.run_auth_nz( patron_barcode )  # performs authN/Z & stores authorization-id
         >>> bd.AId  # authorization-id
         u'abc...'
         >>> bd.authnz_valid
@@ -98,7 +99,7 @@ on this page...
 
 - check out [bdpyweb](https://github.com/birkin/bdpyweb_code), a lightweight [flask](http://flask.pocoo.org) app that turns this bdpy library into a webservice that can be accessed from any language. (This is how our automated [easyBorrow](http://library.brown.edu/borrowing/easyBorrow.php) system requests books for our patrons.)
 
-- ruby [borrowdirect-api wrapper](https://github.com/jrochkind/borrow_direct)
+- for a ruby library, see [jonathan rochkind's](https://github.com/jrochkind) comprehensive and well-tested [borrowdirect-api wrapper](https://github.com/jrochkind/borrow_direct)
 
 - note: this code uses the November 2015 version of the Relais BorrowDirect api. To use this library with the previous version of the api:
 
