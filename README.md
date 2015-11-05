@@ -15,7 +15,7 @@ on this page...
 
 ### installation ###
 
-    $ pip install git+https://github.com/birkin/borrowdirect.py@0.10
+    $ pip install git+https://github.com/Brown-University-Library/borrowdirect.py@0.10
 
 - best to install a 'release' version, as in the example above, though all code in the master branch can be expected to be stable.
 
