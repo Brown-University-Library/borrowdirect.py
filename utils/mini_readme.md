@@ -1,1 +1,1 @@
-A few scripts for experimenting that might be useful.
+Scripts for experimenting that might be useful.
