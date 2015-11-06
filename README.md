@@ -8,12 +8,15 @@ on this page...
 
 - installation
 - common usage
+- possible responses
 - notes
 - license
 
 
 
 ### installation ###
+
+git clone, or pip install...
 
     $ pip install git+https://github.com/Brown-University-Library/borrowdirect.py@0.10
 
@@ -34,7 +37,6 @@ on this page...
         >>> bd.run_search( patron_barcode, 'ISBN', '9780688002305' )
         >>> pprint( bd.search_result )
 
-        ## if found and available via borrowdirect...
         {'Available': True,
          'PickupLocation': [{'PickupLocationCode': 'A',
                              'PickupLocationDescription': 'Rockefeller Library'}],
@@ -43,14 +45,6 @@ on this page...
                          'RequestMessage': 'Request this through Borrow Direct.'},
          'SearchTerm': 'isbn=9780688002305'}
 
-        ## if found but not available via borrowdirect...
-        {'Available': False,
-         'RequestLink': {'ButtonLabel': 'View in the BROWN Library Catalog.',
-                         'ButtonLink': 'http://josiah.brown.edu/record=.b18151139a',
-                         'RequestMessage': 'This item is available locally.'}
-
-        ## if not found
-        {"Problem":{"ErrorCode":"PUBFI002","ErrorMessage":"No result"}}
 
 - or request:
 
@@ -61,16 +55,56 @@ on this page...
         >>> bd.run_request_item( patron_barcode, 'ISBN', '9780688002305' )
         >>> pprint( bd.request_result )
 
-        ## if found and available via borrowdirect...
         {'RequestNumber': 'BRO-12345678'}
 
-        ## if found but not available via borrowdirect...
-        {'RequestLink': {'ButtonLabel': 'View in the BROWN Library Catalog.',
-                         'ButtonLink': 'http://josiah.brown.edu/record=.b18151139a',
-                         'RequestMessage': 'This item is available locally.'}}
 
-        ## if not found
-        {u'Problem': {u'ErrorCode': u'PUBRI003', u'ErrorMessage': u'No result'}}
+
+### possible responses ###
+
+bd.search_result
+
+    ## if found and available via borrowdirect...
+    {'Available': True,
+     'PickupLocation': [{'PickupLocationCode': 'A',
+                         'PickupLocationDescription': 'Rockefeller Library'}],
+     'RequestLink': {'ButtonLabel': 'Request',
+                     'ButtonLink': 'AddRequest',
+                     'RequestMessage': 'Request this through Borrow Direct.'},
+     'SearchTerm': 'isbn=9780688002305'}
+
+    ## found but held locally...
+    {'Available': False,
+     'RequestLink': {'ButtonLabel': 'View in the BROWN Library Catalog.',
+                     'ButtonLink': 'http://josiah.brown.edu/record=.b18151139a',
+                     'RequestMessage': 'This item is available locally.'}
+
+    ## found but not available
+    {'Available': False,
+    'RequestLink': {'ButtonLabel': 'Request',
+                   'ButtonLink': 'https://illiad.brown.edu/illiad/illiad.dll/OpenURL?genre=Book&sid=BD&HeldLocally=N&rft.title=The%20body%20and%20society&rft.aufirst=Peter%20Robert%20Lamont&rft.aulast=Brown&rft.edition=Twentieth%20anniversary%20ed.%20with%20a%20new%20introduction&rft.date=c2008&rft.isbn=9780231144063%20%28cloth%20%3A%20alk.%20paper%20%3A%20alk.%20paper%29&rft.isbn=9780231144070%20%28pbk.%20%3A%20alk.%20paper%20%3A%20alk.%20paper%29&rft.dat=195747707&rft.pub=Columbia%20University%20Press&rft.place=New%20York',
+                   'RequestMessage': 'Place an interlibrary loan request via ILLiad.'},
+    'SearchTerm': 'isbn=9780231144063'}
+
+    ## if not found
+    {"Problem":{"ErrorCode":"PUBFI002","ErrorMessage":"No result"}}
+
+bd.request_result
+
+    ## if found and available via borrowdirect...
+    {'RequestNumber': 'BRO-12345678'}
+
+    ## found but held locally...
+    {'RequestLink': {'ButtonLabel': 'View in the BROWN Library Catalog.',
+                     'ButtonLink': 'http://josiah.brown.edu/record=.b18151139a',
+                     'RequestMessage': 'This item is available locally.'}}
+
+    ## found but not available
+    {'RequestLink': {'ButtonLabel': 'Request',
+                      'ButtonLink': 'https://illiad.brown.edu/illiad/illiad.dll/OpenURL?genre=Book&sid=BD&HeldLocally=N&rft.title=The%20body%20and%20society&rft.aufirst=Peter%20Robert%20Lamont&rft.aulast=Brown&rft.edition=Twentieth%20anniversary%20ed.%20with%20a%20new%20introduction&rft.date=c2008&rft.isbn=9780231144063%20%28cloth%20%3A%20alk.%20paper%20%3A%20alk.%20paper%29&rft.isbn=9780231144070%20%28pbk.%20%3A%20alk.%20paper%20%3A%20alk.%20paper%29&rft.dat=195747707&rft.pub=Columbia%20University%20Press&rft.place=New%20York',
+                      'RequestMessage': 'Place an interlibrary loan request via ILLiad.'}}
+
+    ## if not found
+    {u'Problem': {u'ErrorCode': u'PUBRI003', u'ErrorMessage': u'No result'}}
 
 
 
@@ -86,7 +120,7 @@ on this page...
         >>> bd = BorrowDirect( defaults )
         >>> bd.run_auth_nz( patron_barcode )  # performs authN/Z & stores authorization-id
         >>> bd.AId  # authorization-id
-        u'abc...'
+        'abc...'
         >>> bd.authnz_valid
         True
 
@@ -109,7 +143,6 @@ on this page...
 
 - dev gotchas...
     - If you forget to include your partnership-id, you'll get back, on the auth-attempt, a message that your api-key is incorrect even if it's correct.
-    - I've seen an instance where the search-api indicates, correctly, that an item is found but not available, because it's held and available locally -- _BUT_, the item _is_ requestable via the request-api. I have been told that anything successfully requested via the api will not be cancelled.
 
 
 
